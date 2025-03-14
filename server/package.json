@@ -1,0 +1,17 @@
+{
+    "name": "dentist-server",
+    "version": "1.0.0",
+    "description": "Backend for the Dream Dentist Clinic app",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.21.2",
+        "mongoose": "^8.12.1"
+
+    },
+    "devDependencies": {
+        "jest": "^29.7.0"
+    }
+}
