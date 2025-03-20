@@ -8,8 +8,8 @@ const Login = () => {
     username: '',
     password: ''
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { login, isAuthenticated, error: authError } = useContext(AuthContext);
   const history = useHistory();
@@ -19,94 +19,137 @@ const Login = () => {
     if (isAuthenticated) {
       history.push('/dashboard');
     }
+  }, [isAuthenticated, history]);
 
+  // Handle auth errors from context
+  useEffect(() => {
     if (authError) {
-      setError(authError);
-      setLoading(false);
+      setErrors({ general: authError });
+      setIsSubmitting(false);
     }
-  }, [isAuthenticated, authError, history]);
+  }, [authError]);
 
-  const { username, password } = formData;
-
-  const onChange = e => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const validate = () => {
+    const newErrors = {};
+    
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const onSubmit = async e => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: '' });
+    }
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validate()) return;
+    
+    setIsSubmitting(true);
+    
     try {
-      await login(username, password);
+      await login(formData.username, formData.password);
     } catch (error) {
       console.error('Login error:', error);
-      setLoading(false);
-      setError(error.response?.data?.error || 'Login failed. Please try again.');
+      setIsSubmitting(false);
+      setErrors({ 
+        general: error.response?.data?.error || 'Login failed. Please try again.' 
+      });
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-e0f7fa">
-      <div className="w-full max-w-md m-auto bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-3xl font-bold text-center mb-6">Dream Dentist</h1>
-        <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
-
-        {error && (
+    <div className="min-h-screen flex items-center justify-center bg-[#FCF7FF]">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-3xl font-bold text-center text-[#201A23] mb-6">
+          Dream Dentist Clinic
+        </h2>
+        <h3 className="text-xl text-center text-[#8E7C93] mb-8">
+          Login to your account
+        </h3>
+        
+        {errors.general && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
+            {errors.general}
           </div>
         )}
 
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+            <label 
+              htmlFor="username" 
+              className="block text-sm font-medium text-[#201A23] mb-1"
+            >
               Username
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="username"
               type="text"
+              id="username"
               name="username"
-              value={username}
-              onChange={onChange}
+              value={formData.username}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border ${
+                errors.username ? 'border-red-500' : 'border-[#C5BAC9]'
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E7C93]`}
               placeholder="Enter your username"
-              required
             />
+            {errors.username && (
+              <p className="mt-1 text-sm text-red-500">{errors.username}</p>
+            )}
           </div>
+          
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+            <label 
+              htmlFor="password" 
+              className="block text-sm font-medium text-[#201A23] mb-1"
+            >
               Password
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              id="password"
               type="password"
+              id="password"
               name="password"
-              value={password}
-              onChange={onChange}
+              value={formData.password}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border ${
+                errors.password ? 'border-red-500' : 'border-[#C5BAC9]'
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E7C93]`}
               placeholder="Enter your password"
-              required
             />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+            )}
           </div>
-          <div className="flex items-center justify-between">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? 'Logging in...' : 'Login'}
-            </button>
-          </div>
+          
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-[#8E7C93] text-white py-2 px-4 rounded-md hover:bg-[#201A23] transition-colors duration-300 disabled:opacity-50"
+          >
+            {isSubmitting ? 'Logging in...' : 'Login'}
+          </button>
         </form>
-        <div className="text-center mt-8">
-          <p>
-            Don't have an account?{' '}
-            <Link to="/register" className="text-blue-500 hover:text-blue-700">
-              Register here
-            </Link>
-          </p>
-        </div>
+        
+        <p className="mt-6 text-center text-[#8E7C93]">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-[#201A23] font-medium hover:underline">
+            Register here
+          </Link>
+        </p>
       </div>
     </div>
   );

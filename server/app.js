@@ -16,12 +16,7 @@ const routes = require('./routes');
 const app = express();
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/dream-dentist', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false
-})
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/dream-dentist')
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB connection error:', err));
 

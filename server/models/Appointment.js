@@ -1,19 +1,17 @@
 // server/models/Appointment.js
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const AppointmentSchema = new mongoose.Schema({
-  patientName: {
-    type: String,
-    required: [true, 'Patient name is required'],
-    trim: true
+const AppointmentSchema = new Schema({
+  patient: {
+    type: Schema.Types.ObjectId,
+    ref: 'Patient',
+    required: [true, 'Patient is required']
   },
-  patientPhone: {
-    type: String,
-    required: [true, 'Patient phone is required']
-  },
-  procedure: {
-    type: String,
-    required: [true, 'Procedure is required']
+  dentist: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Dentist is required']
   },
   startTime: {
     type: Date,
@@ -23,13 +21,23 @@ const AppointmentSchema = new mongoose.Schema({
     type: Date,
     required: [true, 'End time is required']
   },
+  duration: {
+    type: Number, // in minutes
+    required: true,
+    default: 30
+  },
+  type: {
+    type: String,
+    enum: ['checkup', 'cleaning', 'filling', 'extraction', 'root-canal', 'crown', 'consultation', 'other'],
+    required: [true, 'Appointment type is required']
+  },
   notes: {
     type: String,
     default: ''
   },
   status: {
     type: String,
-    enum: ['scheduled', 'completed', 'cancelled', 'no-show'],
+    enum: ['scheduled', 'confirmed', 'completed', 'cancelled', 'no-show'],
     default: 'scheduled'
   },
   colorCode: {
@@ -37,7 +45,7 @@ const AppointmentSchema = new mongoose.Schema({
     default: '#4287f5' // Default blue color
   },
   createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
@@ -67,6 +75,13 @@ AppointmentSchema.pre('validate', function(next) {
   if (this.endTime <= this.startTime) {
     this.invalidate('endTime', 'End time must be after start time');
   }
+  
+  // Calculate duration based on start and end time
+  if (this.startTime && this.endTime) {
+    const durationMs = this.endTime.getTime() - this.startTime.getTime();
+    this.duration = Math.round(durationMs / (60 * 1000)); // Convert to minutes
+  }
+  
   next();
 });
 

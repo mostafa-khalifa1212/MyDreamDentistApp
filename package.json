@@ -1,0 +1,37 @@
+{
+  "name": "dream-dentist-clinic",
+  "version": "1.0.0",
+  "description": "Comprehensive web application for dentist clinic management",
+  "main": "index.js",
+  "scripts": {
+    "start": "docker-compose up",
+    "start:dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run start",
+    "client": "cd client && npm start",
+    "install:all": "npm install && npm run install:client && npm run install:server",
+    "install:client": "cd client && npm install",
+    "install:server": "cd server && npm install",
+    "build": "cd client && npm run build",
+    "test": "concurrently \"cd server && npm test\" \"cd client && npm test\"",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down"
+  },
+  "keywords": [
+    "dentist",
+    "clinic",
+    "management",
+    "mern",
+    "react",
+    "node",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "concurrently": "^8.2.0",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.3.2"
+  }
+}

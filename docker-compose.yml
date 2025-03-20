@@ -1,33 +1,65 @@
+version: '3.8'
+
 services:
-  client:
-    build: ./client
-    ports:
-      - "3000:3000"
-    environment:
-      - REACT_APP_API_URL=http://localhost:5000
-    depends_on:
-      - server
-
-  server:
-    build: 
-      context: ./server
-      dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
-    volumes:
-      - .:/usr/src/app
-    environment:
-      - MONGODB_URI=mongodb://mongo:27017/dentist-server
-      - JWT_SECRET=your_secret_key_here
-    depends_on:
-      - mongo
-
+  # MongoDB service
   mongo:
-    image: mongo
-    ports:
-      - "27017:27017"
+    image: mongo:6
+    container_name: dream-dentist-mongo
+    restart: always
     volumes:
       - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    networks:
+      - dream-dentist-network
+  
+  # Backend service
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: dream-dentist-server
+    restart: always
+    ports:
+      - "5002:5002"
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=production
+      - PORT=5002
+      - MONGODB_URI=mongodb://root:rootpassword@mongo:27017/dream-dentist?authSource=admin
+      - JWT_SECRET=your_jwt_secret_should_be_in_env_file
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    networks:
+      - dream-dentist-network
+  
+  # Frontend service
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: dream-dentist-client
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    networks:
+      - dream-dentist-network
 
+# Volumes for data persistence
 volumes:
   mongo-data:
+
+# Network for services
+networks:
+  dream-dentist-network:
+    driver: bridge

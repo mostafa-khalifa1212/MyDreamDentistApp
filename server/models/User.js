@@ -1,8 +1,9 @@
 // server/models/User.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const Schema = mongoose.Schema;
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
   username: {
     type: String,
     required: [true, 'Username is required'],
@@ -15,9 +16,9 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: [8, 'Password must be at least 8 characters']
   },
-  fullName: {
+  name: {
     type: String,
-    required: [true, 'Full name is required']
+    required: [true, 'Name is required']
   },
   phoneNumber: {
     type: String,
@@ -38,8 +39,8 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'user'],
-    default: 'user'
+    enum: ['admin', 'dentist', 'receptionist', 'patient'],
+    default: 'patient'
   },
   status: {
     type: String,
@@ -75,6 +76,4 @@ UserSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-const User = mongoose.model('User', UserSchema);
-
-module.exports = User;
+module.exports = mongoose.model('User', UserSchema);
