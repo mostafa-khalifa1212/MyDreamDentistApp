@@ -16,48 +16,27 @@ const routes = require('./routes');
 const app = express();
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/dream-dentist', {
-
-  
-})
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/dream-dentist')
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Middleware
-app.use(helmet()); // Security headers
-app.use(compression()); // Compress responses
-app.use(morgan('dev')); // HTTP request logger
-app.use(cors()); // Enable CORS
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(helmet(), compression(), morgan('dev'), cors(), express.json(), express.urlencoded({ extended: true }));
 
 // API Routes
 app.use('/', routes);
 
-// Serve static assets in production
+// Production static files
 if (process.env.NODE_ENV === 'production') {
-  // Set static folder
   app.use(express.static(path.join(__dirname, '../client/build')));
-  
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
-  });
+  app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, '../client/build', 'index.html')));
 }
 
-// Error handling middleware
-app.use((req, res, next) => {
-  next(createError(404, 'Endpoint not found'));
-});
-
+// Error handling
+app.use((req, res, next) => next(createError(404, 'Endpoint not found')));
 app.use((err, req, res, next) => {
-  console.error(err);
-  
-  // Set locals, only providing error in development
   const statusCode = err.status || 500;
-  const errorMessage = process.env.NODE_ENV === 'production' && statusCode === 500
-    ? 'Server error'
-    : err.message;
-  
+  const errorMessage = process.env.NODE_ENV === 'production' && statusCode === 500 ? 'Server error' : err.message;
   res.status(statusCode).json({
     success: false,
     error: errorMessage,
