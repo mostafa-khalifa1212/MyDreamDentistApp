@@ -33,13 +33,27 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
     
-    try {
-      const { success, error } = await login(credentials.username, credentials.password);
+    if (!credentials.username || !credentials.password) {
+      setError('Please enter both username and password');
+      return;
+    }
+
+    setLoading(true);    
+    try {      
+      const { success, error } = await login(credentials.username, credentials.password);      
       
       if (!success) {
-        setError(error || 'Invalid username or password');
+          let errorMessage = 'Invalid username or password';
+          if (error === 'User not found') {
+            errorMessage = 'User not found';
+          } else if (error === 'Incorrect password') {
+            errorMessage = 'Incorrect password';
+          }
+          setError(errorMessage);
+      } else {
+          // Clear any previous errors on success (though redirect should happen)
+          setError('');
       }
       // Successful login will redirect via the useEffect above
     } catch (err) {

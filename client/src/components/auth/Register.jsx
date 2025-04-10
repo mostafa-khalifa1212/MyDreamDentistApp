@@ -58,7 +58,7 @@ const Register = () => {
     let score = 0;
     
     // Length check
-    if (password.length > 6) score += 1;
+    const hasMinLength = password.length > 6;
     if (password.length > 10) score += 1;
     
     // Complexity checks
@@ -68,35 +68,44 @@ const Register = () => {
     
     // Set message and color based on score
     let message, color;
-    
-    switch (score) {
-      case 0:
-      case 1:
-        message = 'Very Weak';
-        color = 'danger';
-        break;
-      case 2:
-        message = 'Weak';
-        color = 'warning';
-        break;
-      case 3:
-        message = 'Medium';
-        color = 'warning';
-        break;
-      case 4:
-        message = 'Strong';
-        color = 'success';
-        break;
-      case 5:
-        message = 'Very Strong';
-        color = 'success';
-        break;
-      default:
-        message = 'Very Weak';
-        color = 'danger';
+    let suggestions = [];
+
+    if (score < 3) {
+      if (!hasMinLength) {
+        suggestions.push("At least 7 characters");
+      }
+      if (!/[A-Z]/.test(password)) {
+        suggestions.push("An uppercase letter");
+      }
+      if (!/[0-9]/.test(password)) {
+        suggestions.push("A number");
+      }
+      if (!/[^A-Za-z0-9]/.test(password)) {
+        suggestions.push("A special character");
+      }
     }
-    
-    setPasswordStrength({ score, message, color });
+
+    if (score === 0 || score === 1) {
+      message = "Very Weak";
+      color = "danger";
+    } else if (score === 2) {
+      message = "Weak";
+      color = "warning";
+    } else if (score === 3) {
+      message = "Medium";
+      color = "warning";
+    } else if (score === 4) {
+      message = "Strong";
+      color = "success";
+    } else if (score === 5) {
+      message = "Very Strong";
+      color = "success";
+    } else {
+      message = "Very Weak";
+      color = "danger";
+    }
+
+    setPasswordStrength({ score, message, color, suggestions });
   };
   
   // Validate form before submission
@@ -105,8 +114,20 @@ const Register = () => {
     setError(null);
     
     // Check if all required fields are filled
-    if (!formData.name || !formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
-      setError('All fields are required');
+    if (!formData.name) {
+      setError('Please enter your full name');
+      return false;
+    }
+    if (!formData.username) {
+      setError('Please enter a username');
+      return false;
+    }
+    if (!formData.email) {
+      setError('Please enter your email address');
+      return false;
+    }
+    if (!formData.password) {
+      setError('Please enter a password');
       return false;
     }
     
@@ -123,7 +144,11 @@ const Register = () => {
       setError('Username must be 3-20 characters and can only contain letters, numbers, and underscores');
       return false;
     }
-    
+
+    if (!formData.confirmPassword) {
+        setError('Please confirm your password');
+        return false;
+    }
     // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
@@ -131,7 +156,7 @@ const Register = () => {
     }
     
     // Check password strength
-    if (passwordStrength.score < 3) {
+    if (passwordStrength.score < 3 && passwordStrength.suggestions.length > 0) {
       setError('Please use a stronger password');
       return false;
     }
@@ -319,7 +344,7 @@ const Register = () => {
                   ${passwordStrength.color === 'danger' ? 'text-red-500' : 
                   passwordStrength.color === 'warning' ? 'text-yellow-600' : 'text-green-600'}
                   text-xs mt-1 block
-                `}>
+                `}>{passwordStrength.suggestions.length > 0 ? `Suggestions: ${passwordStrength.suggestions.join(", ")}` :
                   Password strength: {passwordStrength.message}
                 </small>
               </div>

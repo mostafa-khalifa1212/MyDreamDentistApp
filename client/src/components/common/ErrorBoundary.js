@@ -13,13 +13,23 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log the error to an error reporting service
+    // In a production app, report to an error reporting service like Sentry, Bugsnag, etc.:
+    // reportError(error, errorInfo); 
     console.error("Uncaught error:", error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      return <h1>Something went wrong.</h1>;
+      return (
+        <div className="text-center py-5">
+          <h1 className="display-4">Oops!</h1>
+          <h2>An unexpected error occurred.</h2>
+          <p>Please try refreshing the page or return to the home page.</p>
+          <a href="/" className="btn btn-primary">
+            Return to Home
+          </a>
+        </div>
+      );
     }
     return this.props.children;
   }

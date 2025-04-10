@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import './Modal.css';
 
@@ -10,7 +10,8 @@ const Modal = ({
   size = 'md', 
   closeButton = true,
   staticBackdrop = false
-}) => {
+}, triggerElementRef
+) => {
   // Prevent body scrolling when modal is open
   useEffect(() => {
     if (show) {
@@ -48,6 +49,32 @@ const Modal = ({
     }
   };
   
+  const closeButtonRef = useRef(null);
+
+  // Focus management
+  useEffect(() => {
+    if (show) {
+      // Focus on close button when modal opens
+      if (closeButtonRef.current) {
+        closeButtonRef.current.focus();
+      }
+    } else {
+      // Return focus to the trigger element when modal closes
+      if (triggerElementRef && triggerElementRef.current) {
+        triggerElementRef.current.focus();
+      }
+    }
+  }, [show, triggerElementRef]);
+
+  // Ensure triggerElementRef is not stale on close
+  useEffect(() => {
+    return () => {
+      if (triggerElementRef && triggerElementRef.current) {
+        triggerElementRef.current = null;
+      }
+    };
+  }, []);
+
   if (!show) {
     return null;
   }
@@ -67,17 +94,21 @@ const Modal = ({
       onClick={handleBackdropClick}
     >
       <div 
-        className={`modal-container ${sizeClass}`}
+        className={`modal-container ${sizeClass}`}        
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
         onClick={e => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h5 className="modal-title">{title}</h5>
+          <h5 className="modal-title" id="modalTitle">{title}</h5>
           {closeButton && (
             <button 
               type="button" 
               className="btn-close" 
               aria-label="Close"
               onClick={onClose}
+              ref={closeButtonRef}
             ></button>
           )}
         </div>

@@ -41,8 +41,10 @@ export const AdminRoute = () => {
   }
   
   // Redirect to dashboard if not an admin
-  if (!user || user.role !== 'admin') {
-    return <Navigate to="/dashboard" state={{ from: location }} replace />;
+  if (!user || user.role !== 'admin') {    
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-500 font-bold">Unauthorized. You do not have permission to access this page.</div>
+    );
   }
   
   // Render child routes if authorized

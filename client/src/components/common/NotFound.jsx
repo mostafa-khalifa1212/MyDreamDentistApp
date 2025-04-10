@@ -1,19 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const NotFound = () => {
+const NotFound = ({ title = '404', message = 'Page Not Found', linkText = 'Return to Home' }) => {
+
   return (
     <div className="text-center py-5">
-      <h1 className="display-1">404</h1>
-      <h2 className="mb-4">Page Not Found</h2>
-      <p className="lead mb-4">
-        The page you're looking for doesn't exist or has been moved.
-      </p>
+      <h1 className="display-1">{title}</h1>
+      <h2 className="mb-4">{message}</h2>
       <Link to="/" className="btn btn-primary">
-        Return to Home
+        {linkText}
       </Link>
     </div>
   );
 };
 
-export default NotFound; 
+export default NotFound;
