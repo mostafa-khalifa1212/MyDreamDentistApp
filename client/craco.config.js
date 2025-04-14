@@ -26,27 +26,20 @@ module.exports = {
                 options: {
                   postcssOptions: {
                     ident: 'postcss',
-                    config: false,
-                    plugins: [
-                      'postcss-flexbugs-fixes',
-                      [
-                        'postcss-preset-env',
-                        {
-                          autoprefixer: {
-                            flexbox: 'no-2009',
-                          },
-                          stage: 3,
-                        },
-                      ],
-                      'tailwindcss',
-                      'autoprefixer',
-                    ],
+                    config: false
                   },
                 },
               },
             ],
           },
         ],
+      },
+      // Add this devServer section to use setupMiddlewares
+      devServer: {
+        setupMiddlewares: (middlewares, devServer) => {
+          console.log("Using setupMiddlewares in craco.config.js"); // Add a log message
+          return middlewares;
+        },
       },
     },
   },
