@@ -345,7 +345,7 @@ const Register = () => {
                   passwordStrength.color === 'warning' ? 'text-yellow-600' : 'text-green-600'}
                   text-xs mt-1 block
                 `}>{passwordStrength.suggestions.length > 0 ? `Suggestions: ${passwordStrength.suggestions.join(", ")}` :
-                  Password strength: {passwordStrength.message}
+                  `Password strength: ${passwordStrength.message}`}
                 </small>
               </div>
             </div>

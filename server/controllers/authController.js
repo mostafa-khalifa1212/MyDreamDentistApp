@@ -13,7 +13,7 @@ const initializeAdmin = async () => {
         username: 'Mostafa',
         password: 'mostafa2121', // Will be hashed by pre-save hook
         fullName: 'Mostafa Admin',
-        phoneNumber: '+201xxxxxxxxx', // Replace with valid number
+        phoneNumber: '+201550881126', // Replace with valid number
         email: 'admin@dreamdentist.com',
         role: 'admin',
         status: 'approved'
@@ -60,15 +60,18 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
+    console.log(`Login attempt for username: ${username}`)
     
     // Find user
     const user = await User.findOne({ username });
     if (!user) {
+      console.log(`User not found: ${username}`); // Add this log
       return next(createError(401, 'Invalid credentials'));
     }
     
     // Check password
     const isMatch = await user.comparePassword(password);
+    console.log(`Password match result: ${isMatch}`);
     if (!isMatch) {
       return next(createError(401, 'Invalid credentials'));
     }

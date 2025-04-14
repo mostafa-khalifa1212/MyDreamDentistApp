@@ -1,18 +1,18 @@
-// Example: server/routes/api/appointments.js
+// server/routes/index.js
 const express = require('express');
 const router = express.Router();
-const appointmentController = require('../controllers/appointmentController');
-const { authenticate } = require('../middleware/auth');
 
-// Protect all appointment routes
-router.use(authenticate);
+// Import route modules
+const authRoutes = require('./api/auth');
+const userRoutes = require('./api/users');
+const appointmentRoutes = require('./api/appointments');
+// ... other routes
 
-// Define the appointment routes
-router.get('/', appointmentController.getAppointments);
-router.post('/', appointmentController.createAppointment);
-router.put('/:id', appointmentController.updateAppointment);
-router.delete('/:id', appointmentController.deleteAppointment);
-router.get('/financial/daily', appointmentController.getDailyFinancial);
+// Use route modules
+router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
+router.use('/appointments', appointmentRoutes);
+// ... other routes
 
-// Export the router directly—not wrapped in another object
 module.exports = router;
+
