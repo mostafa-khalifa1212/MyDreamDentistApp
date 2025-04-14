@@ -16,76 +16,11 @@ const isStaff = (req, res, next) => {
 // @route   POST /api/appointments
 // @desc    Create a new appointment
 // @access  Private (Staff only)
-router.post('/', auth, isStaff, async (req, res) => {
-  try {
-    const { patientId, dentistId, dateTime, duration, type, notes } = req.body;
-
-    // Validate patient and dentist
-    const patient = await Patient.findById(patientId);
-    if (!patient) {
-      return res.status(404).json({ error: 'Patient not found' });
-    }
-
-    const dentist = await User.findById(dentistId);
-    if (!dentist || dentist.role !== 'dentist') {
-      return res.status(404).json({ error: 'Dentist not found' });
-    }
-
-    // Check for conflicting appointments
-    const appointmentDate = new Date(dateTime);
-    const endTime = new Date(appointmentDate.getTime() + duration * 60000);
-
-    const conflictingAppointment = await Appointment.findOne({
-      dentist: dentistId,
-      status: { $in: ['scheduled', 'confirmed'] },
-      $or: [
-        {
-          dateTime: { $lt: endTime },
-          $expr: { 
-            $gt: [
-              { $add: ['$dateTime', { $multiply: ['$duration', 60000] }] },
-              appointmentDate.getTime()
-            ]
-          }
-        }
-      ]
-    });
-
-    if (conflictingAppointment) {
-      return res.status(400).json({ error: 'Appointment time conflicts with an existing appointment' });
-    }
-
-    // Create appointment
-    const appointment = new Appointment({
-      patient: patientId,
-      dentist: dentistId,
-      dateTime: appointmentDate,
-      duration,
-      type,
-      notes,
-      status: 'scheduled'
-    });
-
-    await appointment.save();
-
-    // Return the appointment with populated references
-    const populatedAppointment = await Appointment.findById(appointment._id)
-      .populate('patient', ['user'])
-      .populate({
-        path: 'patient',
-        populate: {
-          path: 'user',
-          select: 'name'
-        }
-      })
-      .populate('dentist', ['name']);
-
-    res.json(populatedAppointment);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
+const appointmentController = require('../controllers/appointmentController'); // Assuming this controller exists
+router.post('/', auth, isStaff, (req, res, next) => {
+  appointmentController.createAppointment(req, res, next).catch(next);
 });
+
 
 // @route   GET /api/appointments
 // @desc    Get all appointments (with filters)

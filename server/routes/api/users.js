@@ -11,7 +11,18 @@ router.use(authenticate);
  * @desc    Get a user by ID
  * @access  Private
  */
-router.get('/:id', userController.getUserById);
+router.get('/:id', async (req, res, next) => {
+  try {
+    // Check if the user is requesting their own profile or is an admin
+    if (req.user.id === req.params.id || req.user.role === 'admin') {
+      await userController.getUserById(req, res, next);
+    } else {
+      return res.status(403).json({ error: 'Unauthorized: You can only access your own profile' });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 /**
  * @route   PUT /api/users/:id
