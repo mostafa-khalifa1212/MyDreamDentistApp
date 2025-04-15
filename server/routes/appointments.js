@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
-const Appointment = require('../models/Appointment');
-const Patient = require('../models/Patient');
-const User = require('../models/User');
+const { authenticate } = require('../middleware/auth');
+// const Appointment = require('../models/Appointment');
+// const Patient = require('../models/Patient');
+// const User = require('../models/User');
 
 // Middleware to check if user is staff
 const isStaff = (req, res, next) => {
@@ -13,20 +13,18 @@ const isStaff = (req, res, next) => {
   return res.status(403).json({ error: 'Access denied. Staff only.' });
 };
 
-// @route   POST /api/appointments
+// @route   POST /appointments
 // @desc    Create a new appointment
 // @access  Private (Staff only)
 const appointmentController = require('../controllers/appointmentController'); // Assuming this controller exists
-router.post('/', auth, isStaff, (req, res, next) => { // Removed async and await
-  appointmentController.createAppointment(req, res, next) // Removed await
-    .catch(next); // Added .catch(next) to ensure errors are handled
-});
+router.post('/', authenticate, isStaff, appointmentController.createAppointment);
+
 
 
 // @route   GET /api/appointments
 // @desc    Get all appointments (with filters)
 // @access  Private
-router.get('/', auth, async (req, res) => {
+router.get('/', authenticate, async (req, res) => {
   try {
     let query = {};
     
@@ -89,7 +87,7 @@ router.get('/', auth, async (req, res) => {
 // @route   GET /api/appointments/:id
 // @desc    Get appointment by ID
 // @access  Private
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', authenticate, async (req, res) => {
   try {
     const appointment = await Appointment.findById(req.params.id)
       .populate('patient', ['user'])
@@ -132,7 +130,7 @@ router.get('/:id', auth, async (req, res) => {
 // @route   PUT /api/appointments/:id
 // @desc    Update appointment
 // @access  Private (Staff only)
-router.put('/:id', auth, isStaff, async (req, res) => {
+router.put('/:id', authenticate, isStaff, async (req, res) => {
   try {
     const appointment = await Appointment.findById(req.params.id);
     
@@ -176,7 +174,7 @@ router.put('/:id', auth, isStaff, async (req, res) => {
 // @route   DELETE /api/appointments/:id
 // @desc    Delete appointment
 // @access  Private (Staff only)
-router.delete('/:id', auth, isStaff, async (req, res) => {
+router.delete('/:id', authenticate, isStaff, async (req, res) => {
   try {
     const appointment = await Appointment.findById(req.params.id);
     

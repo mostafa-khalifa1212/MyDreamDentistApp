@@ -4,7 +4,7 @@ const createError = require('http-errors');
 const moment = require('moment-timezone');
 
 // Get appointments for a date range
-exports.getAppointments = async (req, res, next) => {
+const getAppointments = async (req, res, next) => {
   try {
     const { start, end, timezone = 'Africa/Cairo' } = req.query;
     
@@ -37,7 +37,8 @@ exports.getAppointments = async (req, res, next) => {
 };
 
 // Create new appointment
-exports.createAppointment = async (req, res, next) => {
+// Modify the createAppointment function:
+const createAppointment = async (req, res, next) => {
   try {
     const { patientName, patientPhone, procedure, startTime, endTime, notes, colorCode, payment } = req.body;
     const timezone = req.body.timezone || 'Africa/Cairo';
@@ -46,17 +47,12 @@ exports.createAppointment = async (req, res, next) => {
     const utcStartTime = moment.tz(startTime, timezone).toDate();
     const utcEndTime = moment.tz(endTime, timezone).toDate();
     
-    // Check for scheduling conflicts
+    // Check for scheduling conflicts - Remove req.params.id since this is a new appointment
     const conflictingAppointment = await Appointment.findOne({
-      $and: [
-        { _id: { $ne: req.params.id } }, // Exclude current appointment if updating
-        {
-          $or: [
-            { startTime: { $lt: utcEndTime, $gte: utcStartTime } },
-            { endTime: { $gt: utcStartTime, $lte: utcEndTime } },
-            { $and: [{ startTime: { $lte: utcStartTime } }, { endTime: { $gte: utcEndTime } }] }
-          ]
-        }
+      $or: [
+        { startTime: { $lt: utcEndTime, $gte: utcStartTime } },
+        { endTime: { $gt: utcStartTime, $lte: utcEndTime } },
+        { $and: [{ startTime: { $lte: utcStartTime } }, { endTime: { $gte: utcEndTime } }] }
       ]
     });
     
@@ -87,7 +83,7 @@ exports.createAppointment = async (req, res, next) => {
 };
 
 // Update appointment
-exports.updateAppointment = async (req, res, next) => {
+const updateAppointment = async (req, res, next) => {
   try {
     const { patientName, patientPhone, procedure, startTime, endTime, notes, colorCode, status, payment } = req.body;
     const timezone = req.body.timezone || 'Africa/Cairo';
@@ -156,7 +152,7 @@ exports.updateAppointment = async (req, res, next) => {
 };
 
 // Delete appointment
-exports.deleteAppointment = async (req, res, next) => {
+const deleteAppointment = async (req, res, next) => {
   try {
     const appointment = await Appointment.findById(req.params.id);
     
@@ -176,7 +172,7 @@ exports.deleteAppointment = async (req, res, next) => {
 };
 
 // Get daily financial summary
-exports.getDailyFinancial = async (req, res, next) => {
+const getDailyFinancial = async (req, res, next) => {
   try {
     const { date, timezone = 'Africa/Cairo' } = req.query;
     
@@ -211,4 +207,11 @@ exports.getDailyFinancial = async (req, res, next) => {
   }
 };
 
-module.exports = exports;
+
+module.exports = {
+  getAppointments,
+  createAppointment,
+  updateAppointment,
+  deleteAppointment,
+  getDailyFinancial
+};
