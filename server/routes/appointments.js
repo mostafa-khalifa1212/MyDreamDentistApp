@@ -17,8 +17,9 @@ const isStaff = (req, res, next) => {
 // @desc    Create a new appointment
 // @access  Private (Staff only)
 const appointmentController = require('../controllers/appointmentController'); // Assuming this controller exists
-router.post('/', auth, isStaff, (req, res, next) => {
-  appointmentController.createAppointment(req, res, next).catch(next);
+router.post('/', auth, isStaff, (req, res, next) => { // Removed async and await
+  appointmentController.createAppointment(req, res, next) // Removed await
+    .catch(next); // Added .catch(next) to ensure errors are handled
 });
 
 

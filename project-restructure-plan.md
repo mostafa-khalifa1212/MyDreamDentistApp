@@ -93,6 +93,7 @@ MyDreamDentistApp/
 │   │   ├── appointmentController.js
 │   │   ├── authController.js
 │   │   └── financialController.js
+│   │   └── userController.js
 │   ├── middleware/
 │   │   └── auth.js
 │   ├── models/
@@ -104,11 +105,10 @@ MyDreamDentistApp/
 │   │   └── User.js
 │   ├── routes/
 │   │   ├── api/
-│   │   │   ├── appointments.js
 │   │   │   ├── auth.js
 │   │   │   └── financial.js
+│   │   │   └── users.js
 │   │   ├── appointments.js
-│   │   ├── auth.js
 │   │   ├── index.js
 │   │   ├── patients.js
 │   │   └── profile.js
