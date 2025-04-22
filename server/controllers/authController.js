@@ -12,8 +12,8 @@ const initializeAdmin = async () => {
       await User.create({
         username: 'Mostafa',
         password: 'mostafa2121', // Will be hashed by pre-save hook
-        fullName: 'Mostafa Admin',
-        phoneNumber: '+201550881126', // Replace with valid number
+        name: 'Mostafa Admin', // Changed from fullName to name
+        phoneNumber: '+201550881126',
         email: 'admin@dreamdentist.com',
         role: 'admin',
         status: 'approved'
@@ -26,7 +26,7 @@ const initializeAdmin = async () => {
 };
 
 // User registration
-exports.register = async (req, res, next) => {
+const register = async (req, res, next) => {
   try {
     const { username, password, fullName, phoneNumber, email } = req.body;
     
@@ -57,15 +57,15 @@ exports.register = async (req, res, next) => {
 };
 
 // User login
-exports.login = async (req, res, next) => {
+const login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
-    console.log(`Login attempt for username: ${username}`)
+    console.log(`Login attempt for username: ${username}`);
     
     // Find user
     const user = await User.findOne({ username });
     if (!user) {
-      console.log(`User not found: ${username}`); // Add this log
+      console.log(`User not found: ${username}`);
       return next(createError(401, 'Invalid credentials'));
     }
     
@@ -102,7 +102,7 @@ exports.login = async (req, res, next) => {
       user: {
         id: user._id,
         username: user.username,
-        fullName: user.fullName,
+        name: user.name,  // Changed from fullName to name
         role: user.role,
         status: user.status
       }
@@ -113,7 +113,7 @@ exports.login = async (req, res, next) => {
 };
 
 // Get user profile
-exports.getProfile = async (req, res, next) => {
+const getProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     if (!user) {
@@ -130,7 +130,7 @@ exports.getProfile = async (req, res, next) => {
 };
 
 // Admin: Get all users
-exports.getAllUsers = async (req, res, next) => {
+const getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find().select('-password').sort('createdAt');
     
@@ -145,7 +145,7 @@ exports.getAllUsers = async (req, res, next) => {
 };
 
 // Admin: Update user status
-exports.updateUserStatus = async (req, res, next) => {
+const updateUserStatus = async (req, res, next) => {
   try {
     const { userId, status } = req.body;
     
@@ -178,4 +178,12 @@ exports.updateUserStatus = async (req, res, next) => {
 // Initialize admin account when server starts
 initializeAdmin();
 
-module.exports = exports;
+// Export all functions in one place
+module.exports = {
+  initializeAdmin,
+  register,
+  login,
+  getProfile,
+  getAllUsers,
+  updateUserStatus
+};

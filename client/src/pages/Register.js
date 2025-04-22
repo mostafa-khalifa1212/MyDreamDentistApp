@@ -1,6 +1,6 @@
 // client/src/pages/Register.js
 import React, { useState, useContext, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
 const Register = () => {
@@ -8,7 +8,7 @@ const Register = () => {
     username: '',
     password: '',
     confirmPassword: '',
-    fullName: '',
+    name: '',
     phoneNumber: '',
     email: ''
   });
@@ -17,16 +17,16 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   
   const { register, isAuthenticated } = useContext(AuthContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      history.push('/dashboard');
+      navigate('/dashboard');
     }
-  }, [isAuthenticated, history]);
+  }, [isAuthenticated, navigate]);
   
-  const { username, password, confirmPassword, fullName, phoneNumber, email } = formData;
+  const { username, password, confirmPassword, name, phoneNumber, email } = formData;
   
   const onChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -62,7 +62,7 @@ const Register = () => {
       const result = await register({
         username,
         password,
-        fullName,
+        name,
         phoneNumber,
         email
       });
@@ -72,7 +72,7 @@ const Register = () => {
         username: '',
         password: '',
         confirmPassword: '',
-        fullName: '',
+        name: '',
         phoneNumber: '',
         email: ''
       });
@@ -120,15 +120,15 @@ const Register = () => {
           </div>
           
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="fullName">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
               Full Name
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="fullName"
+              id="name"
               type="text"
-              name="fullName"
-              value={fullName}
+              name="name"
+              value={name}
               onChange={onChange}
               placeholder="Enter your full name"
               required

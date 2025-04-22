@@ -25,10 +25,19 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: [8, 'Password must be at least 8 characters']
   },
+  phoneNumber: {
+    type: String,
+    required: [true, 'Phone number is required']
+  },
   role: {
     type: String,
     enum: ['patient', 'dentist', 'receptionist', 'admin'],
     default: 'patient'
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'banned'],
+    default: 'pending'
   },
   createdAt: {
     type: Date,

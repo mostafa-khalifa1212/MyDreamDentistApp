@@ -32,6 +32,16 @@ if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, '../client/build', 'index.html')));
 }
 
+const { initializeAdmin } = require('./controllers/authController');
+
+// After MongoDB connection is established
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('Connected to MongoDB');
+    initializeAdmin(); // Create admin user if doesn't exist
+  })
+  .catch((err) => console.error('MongoDB connection error:', err));
+  
 // Error handling
 app.use((req, res, next) => next(createError(404, 'Endpoint not found')));
 app.use((err, req, res, next) => {
