@@ -1,0 +1,12 @@
+# Redirect all requests to index.html
+/* /index.html 200
+
+# Redirect www to non-www
+https://www.yourdomain.com/* https://yourdomain.com/:splat 301!
+
+# Redirect HTTP to HTTPS
+http://yourdomain.com/* https://yourdomain.com/:splat 301!
+
+# Custom error pages
+/404 /404.html 404
+/offline /offline.html 200 

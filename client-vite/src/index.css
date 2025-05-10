@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-primary-50 text-gray-900 antialiased;
+  }
+}
+
+@layer components {
+  .app-container {
+    @apply min-h-screen flex flex-col;
+  }
+
+  .app-header {
+    @apply bg-primary-300 shadow-md;
+  }
+
+  .app-content {
+    @apply flex-grow;
+  }
+
+  .app-footer {
+    @apply bg-primary-900 text-primary-50 py-6;
+  }
+
+  .navbar {
+    @apply py-4;
+  }
+
+  .navbar-brand {
+    @apply text-primary-900 text-xl font-bold hover:text-primary-700 transition duration-200;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 rounded-md transition duration-200 text-primary-900 hover:text-primary-500 hover:bg-primary-100;
+  }
+
+  .nav-link.active {
+    @apply bg-primary-500 text-white hover:bg-primary-600 hover:text-white;
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-primary-500;
+  }
+
+  .input {
+    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700;
+  }
+
+  .card {
+    @apply bg-white shadow rounded-lg p-6;
+  }
+
+  .card-header {
+    @apply border-b border-primary-200 pb-4 mb-4 font-semibold text-xl;
+  }
+
+  .form-control {
+    @apply rounded-md border border-primary-300 px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+  }
+
+  .form-label {
+    @apply block mb-2 font-medium text-primary-700;
+  }
+
+  .form-group {
+    @apply mb-6;
+  }
+}
+
+@layer utilities {
+  .dark-mode {
+    @apply bg-primary-950 text-primary-50;
+  }
+
+  .dark-mode .app-header {
+    @apply bg-primary-800;
+  }
+
+  .dark-mode .navbar-brand {
+    @apply text-primary-50;
+  }
+
+  .dark-mode .nav-link {
+    @apply text-primary-50 hover:bg-primary-700;
+  }
+
+  .dark-mode .nav-link.active {
+    @apply bg-primary-500;
+  }
+
+  .dark-mode .card {
+    @apply bg-primary-900 text-primary-50;
+  }
+
+  .dark-mode .form-control {
+    @apply bg-primary-800 border-primary-700 text-primary-50;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-primary-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-300 rounded hover:bg-primary-400;
+}
+
+/* Calendar styles */
+.rbc-calendar {
+  @apply font-sans;
+}
+
+.rbc-header {
+  @apply p-2 font-medium bg-primary-100 text-primary-900;
+}
+
+.rbc-time-view {
+  @apply rounded-lg overflow-hidden border border-primary-200;
+}
+
+.rbc-time-header-content {
+  @apply border-l border-primary-200;
+}
+
+.rbc-timeslot-group {
+  @apply border-b border-primary-200;
+}
+
+.rbc-time-slot {
+  @apply border-t-0;
+}
+
+.rbc-day-slot .rbc-time-slot {
+  @apply border-t border-dashed border-primary-200;
+}
+
+.rbc-event {
+  @apply rounded;
+}
+
+/* Add font import for Helvetica Neue or alternative */
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: local('Helvetica Neue'), 
+       url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Custom calendar styling */
+.rbc-calendar {
+  font-family: inherit;
+}
+
+.rbc-header {
+  padding: 8px 4px;
+  font-weight: 500;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.rbc-time-view {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--color-primary-light);
+}
+
+.rbc-time-header-content {
+  border-left: 1px solid var(--color-primary-light);
+}
+
+.rbc-timeslot-group {
+  border-bottom: 1px solid var(--color-primary-light);
+}
+
+.rbc-time-slot {
+  border-top: none;
+}
+
+.rbc-day-slot .rbc-time-slot {
+  border-top: 1px dashed var(--color-primary-light);
+}
+
+.rbc-event {
+  border-radius: 4px;
+  /* Individual event styling is handled in CustomEvent component */
+}
+
+.rbc-event.rbc-selected {
+  background-color: var(--color-primary);
+}
+
+.rbc-slot-selecting .rbc-day-slot {
+  background-color: rgba(142, 124, 147, 0.1);
+}
+
+.rbc-today {
+  background-color: rgba(142, 124, 147, 0.1);
+}

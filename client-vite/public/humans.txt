@@ -1,0 +1,10 @@
+/* TEAM */
+Developer: Your Name
+Contact: your.email@example.com
+From: Your Location
+
+/* SITE */
+Last update: 2024/03/20
+Language: English
+Doctype: HTML5
+IDE: Visual Studio Code 

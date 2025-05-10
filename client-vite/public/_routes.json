@@ -1,0 +1,18 @@
+{
+    "version": 1,
+    "include": ["/*"],
+    "exclude": [
+      "/assets/*",
+      "/favicon.svg",
+      "/manifest.json",
+      "/robots.txt",
+      "/sitemap.xml",
+      "/humans.txt",
+      "/security.txt",
+      "/.htaccess",
+      "/web.config",
+      "/_redirects",
+      "/_headers",
+      "/_routes.json"
+    ]
+  }

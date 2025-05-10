@@ -6,29 +6,43 @@ const createError = require('http-errors');
 // Create an admin user if it doesn't exist
 const initializeAdmin = async () => {
   try {
-    const adminExists = await User.findOne({ username: 'Mostafa' });
-    
-    if (!adminExists) {
-      await User.create({
+    let adminUser = await User.findOne({ username: 'Mostafa' }); // Find by username
+
+    if (!adminUser) {
+      adminUser = await User.create({
         username: 'Mostafa',
-        password: 'mostafa2121', // Will be hashed by pre-save hook
-        name: 'Mostafa Admin', // Changed from fullName to name
+        password: 'mostafa2121',
+        name: 'Mostafa Admin',
         phoneNumber: '+201550881126',
-        email: 'admin@dreamdentist.com',
+        email: 'mostafakhalifaa1212@gmail.com', // Ensure this is the email you want for admin
         role: 'admin',
-        status: 'approved'
+        status: 'approved' // Set status on creation
       });
-      console.log('Admin user created successfully');
+      console.log('Admin user created successfully with status: approved');
+    } else {
+      // If admin exists, ensure its status is 'approved'
+      if (adminUser.status !== 'approved') {
+        adminUser.status = 'approved';
+        await adminUser.save();
+        console.log('Admin user status updated to: approved');
+      }
+      // Optionally, update other fields if necessary, e.g., email if it changed
+      // For example, if screenshot email is the correct one:
+      if (adminUser.email !== 'mostafakhalifaa1212@gmail.com') {
+        adminUser.email = 'mostafakhalifaa1212@gmail.com';
+        await adminUser.save();
+        console.log('Admin user email updated.');
+      }
     }
   } catch (error) {
-    console.error('Failed to create admin user:', error);
+    console.error('Failed to initialize/update admin user:', error);
   }
 };
 
 // User registration
 const register = async (req, res, next) => {
   try {
-    const { username, password, fullName, phoneNumber, email } = req.body;
+    const { username, password, name, phoneNumber, email } = req.body;
     
     // Check if user already exists
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
@@ -40,7 +54,7 @@ const register = async (req, res, next) => {
     const user = await User.create({
       username,
       password,
-      fullName,
+      name,
       phoneNumber,
       email,
       status: 'pending'
@@ -59,13 +73,19 @@ const register = async (req, res, next) => {
 // User login
 const login = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-    console.log(`Login attempt for username: ${username}`);
+    const { loginIdentifier, password } = req.body;
+    console.log(`Login attempt for identifier: ${loginIdentifier}`);
     
-    // Find user
-    const user = await User.findOne({ username });
+    // Find user by username or email
+    const user = await User.findOne({
+      $or: [
+        { username: loginIdentifier },
+        { email: loginIdentifier }
+      ]
+    });
+    
     if (!user) {
-      console.log(`User not found: ${username}`);
+      console.log(`User not found: ${loginIdentifier}`);
       return next(createError(401, 'Invalid credentials'));
     }
     
@@ -102,7 +122,7 @@ const login = async (req, res, next) => {
       user: {
         id: user._id,
         username: user.username,
-        name: user.name,  // Changed from fullName to name
+        name: user.name,
         role: user.role,
         status: user.status
       }

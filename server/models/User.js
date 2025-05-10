@@ -39,6 +39,9 @@ const UserSchema = new mongoose.Schema({
     enum: ['pending', 'approved', 'banned'],
     default: 'pending'
   },
+  lastLogin: {
+    type: Date
+  },
   createdAt: {
     type: Date,
     default: Date.now

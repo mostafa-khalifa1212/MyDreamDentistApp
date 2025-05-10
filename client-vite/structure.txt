@@ -1,0 +1,206 @@
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          22/04/2025 12:18 PM                .vscode
+d----          22/04/2025 12:17 PM                public
+d----          22/04/2025 02:15 PM                src
+-a---          22/04/2025 01:09 PM             34 .env
+-a---          22/04/2025 12:09 PM            253 .gitignore
+-a---          22/04/2025 12:09 PM            844 eslint.config.js
+-a---          22/04/2025 12:09 PM            361 index.html
+-a---          22/04/2025 03:10 PM         114191 package-lock.json
+-a---          22/04/2025 03:08 PM            590 package.json
+-a---          22/04/2025 03:08 PM             84 postcss.config.cjs
+-a---          07/05/2025 05:54 PM             87 postcss.config.js
+-a---          22/04/2025 12:09 PM            856 README.md
+-a---          07/05/2025 06:19 PM              0 structure.txt
+-a---          07/05/2025 05:52 PM            612 tailwind.config.js
+-a---          22/04/2025 02:52 PM            263 vite.config.js
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\.vscode
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          22/04/2025 02:55 PM            184 settings.json
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\public
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          22/04/2025 12:17 PM                favicon
+-a---          22/04/2025 12:31 PM           1232 index.html
+-a---          20/03/2025 06:29 AM            263 site.webmanifest
+-a---          22/04/2025 12:09 PM           1497 vite.svg
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\public\favicon
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          20/03/2025 06:29 AM          10513 android-chrome-192x192.png
+-a---          20/03/2025 06:29 AM          32660 android-chrome-512x512.png
+-a---          20/03/2025 06:29 AM           9366 apple-touch-icon.png
+-a---          20/03/2025 06:29 AM            668 favicon-16x16.png
+-a---          20/03/2025 06:29 AM           1474 favicon-32x32.png
+-a---          20/03/2025 06:29 AM          15406 favicon.ico
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          22/04/2025 12:14 PM                assets
+d----          22/04/2025 12:17 PM                components
+d----          22/04/2025 01:28 PM                context
+d----          22/04/2025 12:17 PM                hooks
+d----          22/04/2025 01:27 PM                layouts
+d----          22/04/2025 01:29 PM                pages
+d----          22/04/2025 12:17 PM                services
+d----          22/04/2025 12:17 PM                utils
+-a---          22/04/2025 12:09 PM            606 App.css
+-a---          07/05/2025 05:47 PM           2829 App.jsx
+-a---          07/05/2025 05:51 PM           4286 index.css
+-a---          22/04/2025 02:16 PM            634 index.js
+-a---          22/04/2025 02:15 PM            234 main.jsx
+-a---          27/03/2025 09:28 AM            376 reportWebVitals.js
+-a---          22/04/2025 01:36 PM           2199 routes.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\assets
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          22/04/2025 12:09 PM           4126 react.svg
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\components
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          22/04/2025 12:17 PM                appointments
+d----          22/04/2025 12:17 PM                auth
+d----          22/04/2025 01:27 PM                common
+d----          22/04/2025 12:17 PM                dashboard
+d----          22/04/2025 12:17 PM                layout
+d----          22/04/2025 12:17 PM                patients
+d----          22/04/2025 01:27 PM                routing
+d----          22/04/2025 12:17 PM                treatments
+d----          22/04/2025 12:17 PM                users
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\components\appointments
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          27/03/2025 08:21 PM          12577 AppointmentCalendar.jsx
+-a---          27/03/2025 08:22 PM           6335 AppointmentDetails.jsx
+-a---          27/03/2025 09:10 AM          17786 AppointmentForm.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\components\auth
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          27/03/2025 08:51 AM            476 AdminRoute.jsx
+-a---          27/03/2025 08:30 PM           4403 Auth.css
+-a---          20/03/2025 06:29 AM           5717 Login.css
+-a---          11/04/2025 07:47 AM           5641 Login.jsx
+-a---          27/03/2025 08:51 AM            415 PrivateRoute.jsx
+-a---          14/04/2025 11:48 AM          13489 Register.jsx
+-a---          27/03/2025 08:51 AM            512 StaffRoute.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\components\common
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          11/04/2025 07:47 AM           1075 ErrorBoundary.jsx
+-a---          27/03/2025 09:11 AM            360 Loading.jsx
+-a---          11/04/2025 07:47 AM           2479 Modal.css
+-a---          11/04/2025 07:47 AM           3002 Modal.jsx
+-a---          11/04/2025 07:47 AM            447 NotFound.jsx
+-a---          11/04/2025 07:47 AM           1530 ProtectedRoutes.jsx
+-a---          11/04/2025 07:47 AM            395 Spinner.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\components\dashboard
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          22/04/2025 01:36 PM            437 Dashboard.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\components\layout
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          20/03/2025 06:29 AM           2711 Layout.css
+-a---          22/04/2025 01:37 PM           6718 Layout.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\components\patients
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          22/04/2025 01:37 PM            437 PatientDetails.jsx
+-a---          22/04/2025 01:38 PM          14301 PatientRegistration.jsx
+-a---          22/04/2025 01:38 PM            420 PatientsList.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\components\routing
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          22/04/2025 01:38 PM            538 AdminRoute.jsx
+-a---          22/04/2025 01:38 PM            460 PrivateRoute.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\components\treatments
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          22/04/2025 01:38 PM            428 TreatmentsList.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\components\users
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          22/04/2025 01:39 PM            408 UsersList.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\context
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          27/03/2025 08:51 AM           4104 AppContext.jsx
+-a---          22/04/2025 01:39 PM           2141 AuthContext.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\hooks
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          22/04/2025 02:10 PM            643 useFetch.js
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\layouts
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          22/04/2025 01:40 PM           7495 MainLayout.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\pages
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          14/03/2025 08:24 AM            384 Appointments.jsx
+-a---          20/03/2025 06:29 AM           2275 CalendarDemo.jsx
+-a---          14/03/2025 08:24 AM            352 Dashboard.jsx
+-a---          14/03/2025 08:24 AM            426 Financials.jsx
+-a---          14/03/2025 08:24 AM           4037 Login.jsx
+-a---          14/03/2025 08:24 AM            284 NotFound.jsx
+-a---          22/04/2025 01:41 PM            695 Profile.jsx
+-a---          22/04/2025 01:41 PM           7719 Register.jsx
+-a---          14/03/2025 08:24 AM            410 UserManagement.jsx
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\services
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          14/03/2025 08:24 AM            187 api.js
+
+    Directory: F:\DentistApp\ClaudeAiDentistApp\MyDreamDentistApp\client-vite\src\utils
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          15/04/2025 02:47 PM            414 authToken.js
+-a---          14/03/2025 08:24 AM            345 formatters.js
+-a---          14/03/2025 08:24 AM            478 validations.js
+

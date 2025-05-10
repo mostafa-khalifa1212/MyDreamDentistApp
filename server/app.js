@@ -24,7 +24,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/dreamDent
 app.use(helmet(), compression(), morgan('dev'), cors(), express.json(), express.urlencoded({ extended: true }));
 
 // API Routes
-app.use('/', routes);
+app.use('/api', routes);
 
 // Production static files
 if (process.env.NODE_ENV === 'production') {
