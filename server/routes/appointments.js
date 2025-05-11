@@ -4,7 +4,7 @@ const { authenticate } = require('../middleware/auth');
 // const Appointment = require('../models/Appointment');
 // const Patient = require('../models/Patient');
 // const User = require('../models/User');
-const appointmentController = require('../controllers/appointmentController');
+const appointmentController = require('../controllers/appointmentController'); // Temporary comment
 
 // Middleware to check if user is staff
 const isStaff = (req, res, next) => {
