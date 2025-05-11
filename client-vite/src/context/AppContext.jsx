@@ -21,11 +21,11 @@ const appReducer = (state, action) => {
     case ActionTypes.USER_LOADED:
       return { ...state, isAuthenticated: true, user: action.payload, loading: false };
     case ActionTypes.LOGIN_SUCCESS:
-      localStorage.setItem('token', action.payload.token);
       return { ...state, isAuthenticated: true, user: action.payload.user, loading: false };
     case ActionTypes.AUTH_ERROR:
     case ActionTypes.LOGOUT:
       localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
       return { ...state, isAuthenticated: false, user: null, loading: false };
     case ActionTypes.LOADING:
       return { ...state, loading: true };
@@ -45,7 +45,7 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     const loadUser = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       if (!token) {
         dispatch({ type: ActionTypes.AUTH_ERROR });
         return;
@@ -72,7 +72,7 @@ export const AppProvider = ({ children }) => {
   }, [state.darkMode]);
 
   const auth = {
-    login: async (username, password) => {
+    login: async (username, password, rememberMe = false) => {
       try {
         dispatch({ type: ActionTypes.LOADING });
         const response = await fetch('/auth/login', {
@@ -82,6 +82,13 @@ export const AppProvider = ({ children }) => {
         });
         if (!response.ok) throw new Error('Login failed');
         const data = await response.json();
+        if (rememberMe) {
+          localStorage.setItem('token', data.token);
+          sessionStorage.removeItem('token');
+        } else {
+          sessionStorage.setItem('token', data.token);
+          localStorage.removeItem('token');
+        }
         dispatch({ type: ActionTypes.LOGIN_SUCCESS, payload: data });
         return { success: true };
       } catch (error) {

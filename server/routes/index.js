@@ -6,6 +6,7 @@ const router = express.Router();
 const authRoutes = require('./api/auth');
 const userRoutes = require('./api/users');
 const appointmentRoutes = require('./appointments'); // Corrected path
+const treatmentRoutes = require('./treatments');
 
 // ... other routes
 
@@ -13,6 +14,7 @@ const appointmentRoutes = require('./appointments'); // Corrected path
 router.use('/auth', authRoutes); // Authentication routes
 router.use('/users', userRoutes); // User management routes
 router.use('/appointments', appointmentRoutes); // Appointment routes
+router.use('/treatments', treatmentRoutes);
 // ... other routes
 
 module.exports = router;

@@ -9,21 +9,24 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [patients, setPatients] = useState([]);
-  const [dentists, setDentists] = useState([]);
+  const [treatments, setTreatments] = useState([]);
+  const [lastVisit, setLastVisit] = useState('');
   const [showColorPicker, setShowColorPicker] = useState(false);
   
   // Form data state
   const [formData, setFormData] = useState({
-    patient: '',
-    dentist: user?.role === 'dentist' ? user?.id : '',
+    patientName: '',
+    patientPhone: '',
+    treatments: [],
     startTime: new Date(),
     endTime: new Date(new Date().getTime() + 30 * 60000), // Default 30 min appointment
-    type: 'checkup',
     notes: '',
-    status: 'scheduled',
+    status: 'pending',
     colorCode: '#4287f5', // Default blue
     payment: {
-      amount: 0,
+      total: 0,
+      amountPaid: 0,
+      amountRemaining: 0,
       status: 'pending',
       method: 'cash',
       notes: ''
@@ -34,72 +37,68 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
   useEffect(() => {
     if (initialData) {
       setFormData({
+        ...formData,
         ...initialData,
         startTime: new Date(initialData.startTime),
         endTime: new Date(initialData.endTime),
-        patient: initialData.patient._id || initialData.patient,
-        dentist: initialData.dentist._id || initialData.dentist
+        treatments: initialData.treatments || [],
       });
     }
+    // eslint-disable-next-line
   }, [initialData]);
 
-  // Fetch patients and dentists on component mount
+  // Fetch patients and treatments on mount
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const token = localStorage.getItem('token');
-        
         // Fetch patients
         const patientsResponse = await fetch('/api/patients', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` }
         });
-        
-        if (!patientsResponse.ok) {
-          throw new Error('Failed to fetch patients');
-        }
-        
+        if (!patientsResponse.ok) throw new Error('Failed to fetch patients');
         const patientsData = await patientsResponse.json();
         setPatients(patientsData);
-        
-        // Fetch dentists (users with dentist role)
-        const dentistsResponse = await fetch('/api/users?role=dentist', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+        // Fetch treatments
+        const treatmentsResponse = await fetch('/api/treatments', {
+          headers: { 'Authorization': `Bearer ${token}` }
         });
-        
-        if (!dentistsResponse.ok) {
-          throw new Error('Failed to fetch dentists');
-        }
-        
-        const dentistsData = await dentistsResponse.json();
-        setDentists(dentistsData);
-        
-        // Set default dentist if user is a dentist
-        if (user?.role === 'dentist' && !initialData) {
-          setFormData(prev => ({
-            ...prev,
-            dentist: user.id
-          }));
-        }
+        if (!treatmentsResponse.ok) throw new Error('Failed to fetch treatments');
+        const treatmentsData = await treatmentsResponse.json();
+        setTreatments(treatmentsData.data || []);
       } catch (error) {
         setMessage({ type: 'error', text: error.message });
       } finally {
         setLoading(false);
       }
     };
-    
-    if (isAuthenticated) {
-      fetchData();
-    }
-  }, [isAuthenticated, user]);
+    if (isAuthenticated) fetchData();
+  }, [isAuthenticated]);
+
+  // Fetch last clinic visit when patientName changes
+  useEffect(() => {
+    const fetchLastVisit = async () => {
+      if (!formData.patientName) {
+        setLastVisit('');
+        return;
+      }
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`/api/appointments/last-visit/${encodeURIComponent(formData.patientName)}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        setLastVisit(data.lastVisit);
+      } catch {
+        setLastVisit('');
+      }
+    };
+    fetchLastVisit();
+  }, [formData.patientName]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
     if (name.startsWith('payment.')) {
       const paymentField = name.split('.')[1];
       setFormData(prev => ({
@@ -115,6 +114,36 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
         [name]: value
       }));
     }
+  };
+
+  const handleTreatmentsChange = (e) => {
+    const selected = Array.from(e.target.selectedOptions, option => option.value);
+    setFormData(prev => ({
+      ...prev,
+      treatments: selected
+    }));
+    // Dynamically calculate total cost
+    const total = treatments.filter(t => selected.includes(t._id)).reduce((sum, t) => sum + (t.cost || 0), 0);
+    setFormData(prev => ({
+      ...prev,
+      payment: {
+        ...prev.payment,
+        total,
+        amountRemaining: total - (prev.payment.amountPaid || 0)
+      }
+    }));
+  };
+
+  const handleAmountPaidChange = (e) => {
+    const amountPaid = Number(e.target.value) || 0;
+    setFormData(prev => ({
+      ...prev,
+      payment: {
+        ...prev.payment,
+        amountPaid,
+        amountRemaining: (prev.payment.total || 0) - amountPaid
+      }
+    }));
   };
 
   const handleStartTimeChange = (date) => {
@@ -168,8 +197,8 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
       // Prepare data for submission
       const appointmentData = {
         ...formData,
-        // Ensure the createdBy field is set if this is a new appointment
-        ...(mode === 'create' && { createdBy: user.id })
+        treatments: formData.treatments,
+        payment: formData.payment
       };
       
       // Call the onSubmit handler passed from parent
@@ -178,16 +207,18 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
       // Reset form if creating new appointment
       if (mode === 'create') {
         setFormData({
-          patient: '',
-          dentist: user?.role === 'dentist' ? user?.id : '',
+          patientName: '',
+          patientPhone: '',
+          treatments: [],
           startTime: new Date(),
           endTime: new Date(new Date().getTime() + 30 * 60000),
-          type: 'checkup',
           notes: '',
-          status: 'scheduled',
+          status: 'pending',
           colorCode: '#4287f5',
           payment: {
-            amount: 0,
+            total: 0,
+            amountPaid: 0,
+            amountRemaining: 0,
             status: 'pending',
             method: 'cash',
             notes: ''
@@ -223,20 +254,53 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
           <div className="row mb-3">
             <div className="col-md-6">
               <div className="form-group">
-                <label htmlFor="patient">Patient*</label>
-                <select
-                  className="form-select"
-                  id="patient"
-                  name="patient"
-                  value={formData.patient}
+                <label htmlFor="patientName">Patient Name*</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="patientName"
+                  name="patientName"
+                  value={formData.patientName}
                   onChange={handleInputChange}
                   required
                   disabled={loading}
+                />
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="form-group">
+                <label htmlFor="patientPhone">Patient Phone*</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="patientPhone"
+                  name="patientPhone"
+                  value={formData.patientPhone}
+                  onChange={handleInputChange}
+                  required
+                  disabled={loading}
+                />
+              </div>
+            </div>
+          </div>
+          
+          <div className="row mb-3">
+            <div className="col-md-6">
+              <div className="form-group">
+                <label htmlFor="treatments">Treatments*</label>
+                <select
+                  multiple
+                  className="form-select"
+                  id="treatments"
+                  name="treatments"
+                  value={formData.treatments}
+                  onChange={handleTreatmentsChange}
+                  required
+                  disabled={loading}
                 >
-                  <option value="">Select Patient</option>
-                  {patients.map(patient => (
-                    <option key={patient._id} value={patient._id}>
-                      {patient.user?.name || 'Unknown'} ({patient.contactNumber})
+                  {treatments.map(treatment => (
+                    <option key={treatment._id} value={treatment._id}>
+                      {treatment.name} (${treatment.cost})
                     </option>
                   ))}
                 </select>
@@ -245,23 +309,13 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
             
             <div className="col-md-6">
               <div className="form-group">
-                <label htmlFor="dentist">Dentist*</label>
-                <select
-                  className="form-select"
-                  id="dentist"
-                  name="dentist"
-                  value={formData.dentist}
-                  onChange={handleInputChange}
-                  required
-                  disabled={loading || user?.role === 'dentist'}
-                >
-                  <option value="">Select Dentist</option>
-                  {dentists.map(dentist => (
-                    <option key={dentist._id} value={dentist._id}>
-                      Dr. {dentist.name}
-                    </option>
-                  ))}
-                </select>
+                <label>Last Clinic Visit</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={lastVisit ? (lastVisit === 'First time' ? 'First time' : new Date(lastVisit).toLocaleString()) : ''}
+                  readOnly
+                />
               </div>
             </div>
           </div>
@@ -323,30 +377,6 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
             
             <div className="col-md-4">
               <div className="form-group">
-                <label htmlFor="type">Appointment Type*</label>
-                <select
-                  className="form-select"
-                  id="type"
-                  name="type"
-                  value={formData.type}
-                  onChange={handleInputChange}
-                  required
-                  disabled={loading}
-                >
-                  <option value="checkup">Check-up</option>
-                  <option value="cleaning">Cleaning</option>
-                  <option value="filling">Filling</option>
-                  <option value="extraction">Extraction</option>
-                  <option value="root-canal">Root Canal</option>
-                  <option value="crown">Crown</option>
-                  <option value="consultation">Consultation</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="col-md-4">
-              <div className="form-group">
                 <label htmlFor="status">Status</label>
                 <select
                   className="form-select"
@@ -356,18 +386,15 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
                   onChange={handleInputChange}
                   disabled={loading}
                 >
-                  <option value="scheduled">Scheduled</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="completed">Completed</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="in-clinic">In-Clinic</option>
                   <option value="cancelled">Cancelled</option>
-                  <option value="no-show">No Show</option>
                 </select>
               </div>
             </div>
-          </div>
-          
-          <div className="row mb-3">
-            <div className="col-md-6">
+            
+            <div className="col-md-4">
               <div className="form-group">
                 <label htmlFor="colorCode">Color Code</label>
                 <div className="input-group">
@@ -406,47 +433,56 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
                 )}
               </div>
             </div>
-            
-            <div className="col-md-6">
+          </div>
+          
+          <div className="row mb-3">
+            <div className="col-md-4">
               <div className="form-group">
-                <label htmlFor="payment.amount">Payment Amount</label>
-                <div className="input-group">
-                  <span className="input-group-text">$</span>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="payment.amount"
-                    name="payment.amount"
-                    value={formData.payment.amount}
-                    onChange={handleInputChange}
-                    min="0"
-                    step="0.01"
-                    disabled={loading}
-                  />
-                </div>
+                <label htmlFor="payment.total">Total Cost</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="payment.total"
+                  name="payment.total"
+                  value={formData.payment.total}
+                  readOnly
+                />
+              </div>
+            </div>
+            
+            <div className="col-md-4">
+              <div className="form-group">
+                <label htmlFor="payment.amountPaid">Amount Paid</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="payment.amountPaid"
+                  name="payment.amountPaid"
+                  value={formData.payment.amountPaid}
+                  onChange={handleAmountPaidChange}
+                  min={0}
+                  max={formData.payment.total}
+                  disabled={loading}
+                />
+              </div>
+            </div>
+            
+            <div className="col-md-4">
+              <div className="form-group">
+                <label htmlFor="payment.amountRemaining">Amount Remaining</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="payment.amountRemaining"
+                  name="payment.amountRemaining"
+                  value={formData.payment.amountRemaining}
+                  readOnly
+                />
               </div>
             </div>
           </div>
           
           <div className="row mb-3">
-            <div className="col-md-6">
-              <div className="form-group">
-                <label htmlFor="payment.status">Payment Status</label>
-                <select
-                  className="form-select"
-                  id="payment.status"
-                  name="payment.status"
-                  value={formData.payment.status}
-                  onChange={handleInputChange}
-                  disabled={loading}
-                >
-                  <option value="pending">Pending</option>
-                  <option value="partial">Partial</option>
-                  <option value="paid">Paid</option>
-                </select>
-              </div>
-            </div>
-            
             <div className="col-md-6">
               <div className="form-group">
                 <label htmlFor="payment.method">Payment Method</label>
@@ -462,6 +498,24 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
                   <option value="card">Card</option>
                   <option value="insurance">Insurance</option>
                   <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="col-md-6">
+              <div className="form-group">
+                <label htmlFor="payment.status">Payment Status</label>
+                <select
+                  className="form-select"
+                  id="payment.status"
+                  name="payment.status"
+                  value={formData.payment.status}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                >
+                  <option value="pending">Pending</option>
+                  <option value="partial">Partial</option>
+                  <option value="paid">Paid</option>
                 </select>
               </div>
             </div>

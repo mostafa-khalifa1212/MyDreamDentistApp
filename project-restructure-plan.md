@@ -330,3 +330,96 @@ MyDreamDentistApp/
 ├── package.json
 ├── project-restructure-plan.md
 └── README.md
+
+Absolutely! Here’s a clear, actionable MVP roadmap for your Dream Dentist web app, broken down into small, focused tasks. This is based on your project-restructure-plan, your tech stack, and the modern, clean UI style shown in your screenshot.
+
+---
+
+## 🦷 Dream Dentist MVP Roadmap
+
+### 1. **Project Setup & Tooling**
+- [ ] Clean up the codebase: remove unused files, duplicate entry points, and fix all entry references.
+- [ ] Ensure Vite is the only build tool and all configs (Tailwind, PostCSS, ESLint, Prettier) are correct.
+- [ ] Set up a consistent folder structure for `src/` (components, pages, context, hooks, layouts, services, utils).
+- [ ] Set up a modern, minimal theme in Tailwind (brand colors, font, spacing).
+- [ ] Add a favicon and manifest for PWA basics.
+
+---
+
+### 2. **Authentication & User Management**
+- [ ] Implement AuthContext and AuthProvider for global auth state.
+- [ ] Create login and registration pages with form validation and error handling.
+- [ ] Connect login/register to backend API (JWT-based).
+- [ ] Implement protected routes (redirect unauthenticated users to login).
+- [ ] Add a simple user profile page (view/edit basic info).
+
+---
+
+### 3. **Main Layout & Navigation**
+- [ ] Build a responsive sidebar with navigation (Appointments, Patients, Treatments, Billing, Reports, Inventory).
+- [ ] Add a top bar with user info, logout, and theme toggle (light/dark).
+- [ ] Ensure layout is mobile-friendly and matches the clean, modern look (as in your screenshot).
+
+---
+
+### 4. **Appointments Module**
+- [ ] Create an appointment list view (table with filters, search, and status).
+- [ ] Add a calendar view (day/week/month switch, drag-and-drop optional for MVP).
+- [ ] Implement “New Appointment” modal/form with validation.
+- [ ] Show appointment details and allow editing/cancelling.
+- [ ] Connect all appointment actions to backend API.
+
+---
+
+### 5. **Patients Module**
+- [ ] List all patients (table with search/filter).
+- [ ] Add patient registration form.
+- [ ] Patient details page (basic info, contact, last visit, etc.).
+- [ ] Edit patient info.
+- [ ] Connect all patient actions to backend API.
+
+---
+
+### 6. **Treatments Module**
+- [ ] List all treatments (table).
+- [ ] Add/edit treatment types (name, description, cost, duration, category).
+- [ ] Connect to backend API.
+
+---
+
+### 7. **Minimal Management Modules (Billing, Reports, Inventory)**
+- [ ] Create placeholder pages for Billing, Reports, Inventory (just a heading and “Coming Soon” for MVP).
+
+---
+
+### 8. **General UI/UX Polish**
+- [ ] Add loading spinners and skeletons for async data.
+- [ ] Add error boundaries and user-friendly error messages.
+- [ ] Ensure all forms have clear validation and feedback.
+- [ ] Make sure the app is fully responsive and visually consistent.
+
+---
+
+### 9. **Testing & QA**
+- [ ] Manually test all flows (auth, CRUD, navigation) on desktop and mobile.
+- [ ] Fix any bugs or inconsistencies.
+- [ ] Add basic unit tests for context and utility functions (optional for MVP).
+
+---
+
+### 10. **Deployment Prep**
+- [ ] Add environment variable support for API URLs.
+- [ ] Prepare Dockerfile and docker-compose for local/prod deployment.
+- [ ] Write a simple README with setup instructions.
+
+---
+
+## **How to Use This Roadmap**
+- Work through each section in order, checking off tasks as you go.
+- For each module, start with the UI skeleton, then connect to the backend.
+- Keep the UI clean, modern, and consistent—use your screenshot as a style reference.
+- Focus on getting the core flows working smoothly for the MVP. Add advanced features (analytics, notifications, etc.) after the MVP is stable.
+
+---
+
+Would you like this added to your project-restructure-plan.md, or do you want to start working through these tasks right away? If you want, I can also help you prioritize which module to tackle first!

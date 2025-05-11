@@ -10,6 +10,7 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   
   const { isAuthenticated, login } = useApp();
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const Login = () => {
 
     setLoading(true);    
     try {      
-      const { success, error } = await login(credentials.username, credentials.password);      
+      const { success, error } = await login(credentials.username, credentials.password, rememberMe);      
       
       if (!success) {
           let errorMessage = 'Invalid username or password';
@@ -113,6 +114,8 @@ const Login = () => {
                   name="remember"
                   type="checkbox"
                   className="h-4 w-4 text-primary-500 border-primary-300 rounded"
+                  checked={rememberMe}
+                  onChange={e => setRememberMe(e.target.checked)}
                 />
                 <label htmlFor="remember" className="ml-2 block text-sm text-primary-700">
                   Remember me

@@ -6,22 +6,22 @@ const TreatmentSchema = new Schema({
     type: String,
     required: true
   },
-  description: {
-    type: String,
-    required: true
-  },
   cost: {
     type: Number,
     required: true
   },
+  description: {
+    type: String,
+    required: false // Not required for MVP
+  },
   duration: {
     type: Number, // in minutes
-    required: true
+    required: false // Not required for MVP
   },
   category: {
     type: String,
     enum: ['preventive', 'restorative', 'cosmetic', 'orthodontic', 'surgical', 'emergency'],
-    required: true
+    required: false // Not required for MVP
   },
   createdAt: {
     type: Date,

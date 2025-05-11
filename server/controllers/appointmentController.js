@@ -37,17 +37,21 @@ const getAppointments = async (req, res, next) => {
 };
 
 // Create new appointment
-// Modify the createAppointment function:
 const createAppointment = async (req, res, next) => {
   try {
-    const { patientName, patientPhone, procedure, startTime, endTime, notes, colorCode, payment } = req.body;
+    const { patientName, patientPhone, treatments, startTime, endTime, notes, colorCode, status, payment } = req.body;
     const timezone = req.body.timezone || 'Africa/Cairo';
-    
+
+    // Validate required fields
+    if (!patientName || !patientPhone || !startTime || !endTime) {
+      return next(createError(400, 'Missing required fields'));
+    }
+
     // Convert times to UTC
     const utcStartTime = moment.tz(startTime, timezone).toDate();
     const utcEndTime = moment.tz(endTime, timezone).toDate();
-    
-    // Check for scheduling conflicts - Remove req.params.id since this is a new appointment
+
+    // Check for scheduling conflicts
     const conflictingAppointment = await Appointment.findOne({
       $or: [
         { startTime: { $lt: utcEndTime, $gte: utcStartTime } },
@@ -55,24 +59,26 @@ const createAppointment = async (req, res, next) => {
         { $and: [{ startTime: { $lte: utcStartTime } }, { endTime: { $gte: utcEndTime } }] }
       ]
     });
-    
     if (conflictingAppointment) {
       return next(createError(409, 'This time slot conflicts with an existing appointment'));
     }
-    
+
     // Create appointment
     const appointment = await Appointment.create({
       patientName,
       patientPhone,
-      procedure,
+      treatments,
       startTime: utcStartTime,
       endTime: utcEndTime,
       notes,
       colorCode,
+      status: status || 'pending',
       createdBy: req.user.id,
       payment: payment || {}
     });
-    
+
+    await appointment.populate('treatments').populate('createdBy');
+
     res.status(201).json({
       success: true,
       data: appointment
@@ -85,63 +91,58 @@ const createAppointment = async (req, res, next) => {
 // Update appointment
 const updateAppointment = async (req, res, next) => {
   try {
-    const { patientName, patientPhone, procedure, startTime, endTime, notes, colorCode, status, payment } = req.body;
+    const { patientName, patientPhone, treatments, startTime, endTime, notes, colorCode, status, payment } = req.body;
     const timezone = req.body.timezone || 'Africa/Cairo';
-    
-    // Find appointment
+
     let appointment = await Appointment.findById(req.params.id);
     if (!appointment) {
       return next(createError(404, 'Appointment not found'));
     }
-    
+
     // Convert times to UTC if provided
     let utcStartTime, utcEndTime;
     if (startTime) utcStartTime = moment.tz(startTime, timezone).toDate();
     if (endTime) utcEndTime = moment.tz(endTime, timezone).toDate();
-    
+
     // Check for scheduling conflicts if times are being updated
     if (utcStartTime && utcEndTime) {
       const conflictingAppointment = await Appointment.findOne({
-        $and: [
-          { _id: { $ne: req.params.id } },
-          {
-            $or: [
-              { startTime: { $lt: utcEndTime, $gte: utcStartTime } },
-              { endTime: { $gt: utcStartTime, $lte: utcEndTime } },
-              { $and: [{ startTime: { $lte: utcStartTime } }, { endTime: { $gte: utcEndTime } }] }
-            ]
-          }
+        _id: { $ne: req.params.id },
+        $or: [
+          { startTime: { $lt: utcEndTime, $gte: utcStartTime } },
+          { endTime: { $gt: utcStartTime, $lte: utcEndTime } },
+          { $and: [{ startTime: { $lte: utcStartTime } }, { endTime: { $gte: utcEndTime } }] }
         ]
       });
-      
       if (conflictingAppointment) {
         return next(createError(409, 'This time slot conflicts with an existing appointment'));
       }
     }
-    
+
     // Update fields
     if (patientName) appointment.patientName = patientName;
     if (patientPhone) appointment.patientPhone = patientPhone;
-    if (procedure) appointment.procedure = procedure;
+    if (treatments) appointment.treatments = treatments;
     if (utcStartTime) appointment.startTime = utcStartTime;
     if (utcEndTime) appointment.endTime = utcEndTime;
     if (notes !== undefined) appointment.notes = notes;
     if (colorCode) appointment.colorCode = colorCode;
-    if (status && ['scheduled', 'completed', 'cancelled', 'no-show'].includes(status)) {
+    if (status && ['pending', 'approved', 'in-clinic', 'cancelled'].includes(status)) {
       appointment.status = status;
     }
-    
     // Update payment if provided
     if (payment) {
-      if (payment.amount !== undefined) appointment.payment.amount = payment.amount;
+      if (payment.total !== undefined) appointment.payment.total = payment.total;
+      if (payment.amountPaid !== undefined) appointment.payment.amountPaid = payment.amountPaid;
+      if (payment.amountRemaining !== undefined) appointment.payment.amountRemaining = payment.amountRemaining;
       if (payment.status) appointment.payment.status = payment.status;
       if (payment.method) appointment.payment.method = payment.method;
       if (payment.notes !== undefined) appointment.payment.notes = payment.notes;
     }
-    
-    // Save updated appointment
+
     await appointment.save();
-    
+    await appointment.populate('treatments').populate('createdBy');
+
     res.status(200).json({
       success: true,
       data: appointment
@@ -207,11 +208,28 @@ const getDailyFinancial = async (req, res, next) => {
   }
 };
 
+// Get last clinic visit for a patient
+const getLastClinicVisit = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    // Try to find by patientName (for MVP, as appointments use patientName)
+    const lastAppointment = await Appointment.find({ patientName: id })
+      .sort({ endTime: -1 })
+      .limit(1);
+    if (!lastAppointment.length) {
+      return res.status(200).json({ lastVisit: 'First time' });
+    }
+    return res.status(200).json({ lastVisit: lastAppointment[0].endTime });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   getAppointments,
   createAppointment,
   updateAppointment,
   deleteAppointment,
-  getDailyFinancial
+  getDailyFinancial,
+  getLastClinicVisit
 };

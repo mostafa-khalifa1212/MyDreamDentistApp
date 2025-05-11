@@ -11,10 +11,11 @@ const AppointmentSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Patient phone is required']
   },
-  procedure: {
-    type: String,
-    required: [true, 'Procedure is required']
-  },
+  treatments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Treatment',
+    required: false
+  }],
   startTime: {
     type: Date,
     required: [true, 'Start time is required']
@@ -29,8 +30,8 @@ const AppointmentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['scheduled', 'completed', 'cancelled', 'no-show'],
-    default: 'scheduled'
+    enum: ['pending', 'approved', 'in-clinic', 'cancelled'],
+    default: 'pending'
   },
   colorCode: {
     type: String,
@@ -42,7 +43,15 @@ const AppointmentSchema = new mongoose.Schema({
     required: true
   },
   payment: {
-    amount: {
+    total: {
+      type: Number,
+      default: 0
+    },
+    amountPaid: {
+      type: Number,
+      default: 0
+    },
+    amountRemaining: {
       type: Number,
       default: 0
     },
