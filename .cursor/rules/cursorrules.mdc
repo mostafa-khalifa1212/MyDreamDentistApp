@@ -1,0 +1,115 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+# .cursorrules for MyDreamDentistApp
+
+## \[Meta]
+
+# Bind rules to this monorepo
+
+project: MyDreamDentistApp ([github.com](mdc:https:/github.com/mostafa-khalifa1212/MyDreamDentistApp))
+root: .
+stack:
+
+* frontend: React (Vite) ([digitalocean.com])
+* styling: Tailwind CSS ([v3.tailwindcss.com])
+* backend: Node.js + Express ([expressjs.com])
+* database: MongoDB (Mongoose ORM) ([stackoverflow.com])
+
+oai\_model: cursor-pro-oz-mc (auto-select)
+long\_context: enabled  # support large file context ([vite.dev])
+
+## \[File Structure]
+
+# Encourage AI to respect existing directory layout
+
+* client-vite/\*\*          # React+Vite app ([github.com](mdc:https:/github.com/mostafa-khalifa1212/MyDreamDentistApp))
+* server/\*\*               # Express API and Mongoose models ([github.com](mdc:https:/github.com/mostafa-khalifa1212/MyDreamDentistApp))
+* tools/\*\*                # Utility scripts
+* docker-compose.yml
+
+## \[Naming Conventions]
+
+# Frontend (React)
+
+component\_naming: PascalCase  # e.g., `UserCard.jsx` ([react.dev])
+hook\_functions: useCamelCase  # e.g., `useAuthContext` ([react.dev])
+files\_jsx: \*.jsx  # React component files use .jsx extension
+
+# Styling (Tailwind)
+
+css\_classes: utility-first  # apply classes directly in className ([v3.tailwindcss.com])
+config\_file: tailwind.config.js  # ensure content paths include src/\*\*/\*.{js,jsx} ([v3.tailwindcss.com])
+
+# Backend (Node/Express)
+
+js\_indentation: 2 spaces  # follow Node style guide ([github.com])
+variable\_case: camelCase  # lowerCamelCase for variables & functions ([github.com])
+class\_case: PascalCase  # UpperCamelCase for classes ([github.com])
+constants: UPPERCASE  # e.g., API\_PORT ([github.com])
+
+file\_naming:
+
+* route\_files: kebab-case  # e.g., user-routes.js ([anixir.com])
+* model\_files: singularPascalCase  # e.g., Appointment.js ([anixir.com])
+
+## \[Coding Patterns]
+
+# Prompt engineering inside Cursor
+
+prompt\_structure:
+
+* context\_header # brief project context
+* task\_list      # numbered feature requests
+* acceptance\_criteria # define done ✅
+  instructions\_style: clear\_directives  # use imperative verbs, list required endpoints and schemas
+  include\_tests\_first: true  # always ask for unit tests (Vitest/Jest) before code ([digitalocean.com])
+
+## \[API & Schema]
+
+# MongoDB & Mongoose
+
+schema\_naming: singularPascalCase  # e.g., PatientSchema ([stackoverflow.com])
+connection\_pool: true  # connect once at startup, reuse pool ([stackoverflow.com])
+indexing: recommend\_compound\_when\_needed  # based on query patterns ([smit90.medium.com])
+error\_handling: centralized\_middleware  # use Express error handler middleware ([medium.com])
+
+## \[UX & Styling]
+
+responsive\_classes: useTailwindResponsive  # e.g., `sm:flex` ([v3.tailwindcss.com])
+theme\_toggle: include\_dark\_mode  # set up via Tailwind `dark:` variants
+
+## \[Quality & Performance]
+
+linting: eslint+prettier  # integrate with project’s `.eslintrc.json` and Prettier configs ([google.github.io])
+testing\_framework: vitest  # preferred for Vite projects ([medium.com])
+ci\_checks:
+
+* lint
+* type\_check # if TS used
+* test
+
+## \[Editor Settings]
+
+vscode:
+
+* workspaceSettings:
+  \*\*/*.js: eslint.validate
+  \*\*/*.jsx: eslint.validate
+  \*\*/\*.css: tailwind-intellisense
+  keybindings: {}
+
+##IMPORTANT:
+
+You have access to the following MCP servers and tools, use them as much as you need you have access to them all the time:
+
+* server-sequential-thinking
+* desktop-commander
+* memory-bank-mcp
+* devdb-vscode
+# End of .cursorrules

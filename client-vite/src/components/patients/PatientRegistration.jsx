@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext.jsx';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 const PatientRegistration = () => {
   const { isAuthenticated } = useApp();
   const [formData, setFormData] = useState({
@@ -71,7 +73,7 @@ const PatientRegistration = () => {
       };
 
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/patients', {
+      const response = await fetch(`${API_URL}/patients`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

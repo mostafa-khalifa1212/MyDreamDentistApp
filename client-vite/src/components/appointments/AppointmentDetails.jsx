@@ -1,9 +1,9 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 const AppointmentDetails = ({ appointment, onEdit, onDelete, canEdit = false }) => {
-  const { user } = useApp();
+  const { user } = useAuth();
   
   if (!appointment) {
     return <div>No appointment data available</div>;

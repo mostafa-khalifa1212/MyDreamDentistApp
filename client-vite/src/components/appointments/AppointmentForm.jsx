@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useApp } from '../../context/AppContext';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { SketchPicker } from 'react-color';
+import { useAuth } from '../../context/AuthContext.jsx';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
-  const { isAuthenticated, user } = useApp();
+  const { isAuthenticated, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [patients, setPatients] = useState([]);
@@ -54,14 +56,14 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
       try {
         const token = localStorage.getItem('token');
         // Fetch patients
-        const patientsResponse = await fetch('/api/patients', {
+        const patientsResponse = await fetch(`${API_URL}/patients`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!patientsResponse.ok) throw new Error('Failed to fetch patients');
         const patientsData = await patientsResponse.json();
         setPatients(patientsData);
         // Fetch treatments
-        const treatmentsResponse = await fetch('/api/treatments', {
+        const treatmentsResponse = await fetch(`${API_URL}/treatments`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!treatmentsResponse.ok) throw new Error('Failed to fetch treatments');
@@ -85,7 +87,7 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
       }
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`/api/appointments/last-visit/${encodeURIComponent(formData.patientName)}`, {
+        const res = await fetch(`${API_URL}/appointments/last-visit/${encodeURIComponent(formData.patientName)}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -390,6 +392,8 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
                   <option value="approved">Approved</option>
                   <option value="in-clinic">In-Clinic</option>
                   <option value="cancelled">Cancelled</option>
+                  <option value="completed">Completed</option>
+                  <option value="no-show">No-Show</option>
                 </select>
               </div>
             </div>
@@ -397,40 +401,36 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
             <div className="col-md-4">
               <div className="form-group">
                 <label htmlFor="colorCode">Color Code</label>
-                <div className="input-group">
-                  <div 
-                    className="color-preview" 
-                    style={{
-                      backgroundColor: formData.colorCode,
-                      width: '40px',
-                      height: '38px',
-                      marginRight: '10px',
-                      border: '1px solid #ced4da',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => setShowColorPicker(!showColorPicker)}
-                  />
+                <div className="flex items-center gap-2 mt-2">
+                  {[
+                    '#ff4444', // Red
+                    '#ff8800', // Orange
+                    '#33b5e5', // Light Blue
+                    '#4287f5', // Blue
+                    '#a3e635', // Lime Green
+                    '#00bcd4', // Cyan
+                    '#e040fb', // Magenta
+                    '#ffd600', // Yellow
+                    '#00C851', // Green
+                    '#ffbb33', // Amber
+                  ].map(color => (
+                    <button
+                      key={color}
+                      type="button"
+                      className={`w-8 h-8 rounded-full border-2 ${formData.colorCode === color ? 'border-black' : 'border-gray-300'}`}
+                      style={{ backgroundColor: color }}
+                      onClick={() => setFormData(prev => ({ ...prev, colorCode: color }))}
+                      aria-label={`Pick color ${color}`}
+                    />
+                  ))}
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control ml-2 w-24"
                     value={formData.colorCode}
-                    onChange={(e) => setFormData(prev => ({ ...prev, colorCode: e.target.value }))}
+                    onChange={e => setFormData(prev => ({ ...prev, colorCode: e.target.value }))}
                     disabled={loading}
                   />
                 </div>
-                {showColorPicker && (
-                  <div style={{ position: 'absolute', zIndex: 2 }}>
-                    <div 
-                      style={{ position: 'fixed', top: '0px', right: '0px', bottom: '0px', left: '0px' }}
-                      onClick={() => setShowColorPicker(false)}
-                    />
-                    <SketchPicker 
-                      color={formData.colorCode}
-                      onChange={handleColorChange}
-                    />
-                  </div>
-                )}
               </div>
             </div>
           </div>

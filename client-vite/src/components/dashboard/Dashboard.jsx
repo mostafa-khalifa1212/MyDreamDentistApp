@@ -1,8 +1,8 @@
 import React from 'react';
-import { useApp } from '../../context/AppContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 const Dashboard = () => {
-  const { user } = useApp();
+  const { user } = useAuth();
 
   return (
     <div className="p-6">

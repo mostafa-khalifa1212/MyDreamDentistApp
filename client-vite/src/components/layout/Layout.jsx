@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 import './Layout.css';
 
 const Layout = ({ children }) => {
-  const { isAuthenticated, user, logout, darkMode, toggleTheme } = useApp();
+  const { darkMode, toggleTheme } = useApp();
+  const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
   
   const isActive = (path) => {
