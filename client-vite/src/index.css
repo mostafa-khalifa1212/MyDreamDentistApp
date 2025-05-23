@@ -112,8 +112,34 @@
   }
 
   .dark-mode .form-control {
-    @apply bg-primary-800 border-primary-700 text-primary-50;
+    @apply bg-primary-800 border-primary-700 text-primary-50 placeholder-primary-300;
   }
+
+  /* General input styling for dark mode if not using .form-control */
+  .dark-mode input[type="text"],
+  .dark-mode input[type="email"],
+  .dark-mode input[type="password"],
+  .dark-mode input[type="search"],
+  .dark-mode input[type="number"],
+  .dark-mode input[type="tel"],
+  .dark-mode select, /* Added select for consistency */
+  .dark-mode textarea {
+    @apply bg-primary-800 border-primary-700 text-primary-50 placeholder-primary-300;
+  }
+  /* Fallback for inputs that might not have a specific type attribute but are text-like,
+     and ensure specific input types like buttons/checkboxes are not affected if they have their own styling.
+     This rule might be too broad or conflict if not careful, but attempts to catch unstyled inputs.
+     A better approach is to ensure all inputs use a consistent class like .form-control or .input
+     and style that class for dark mode.
+  */
+  .dark-mode input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="image"]):not([type="color"]),
+  .dark-mode textarea,
+  .dark-mode select { /* Added select here too */
+    /* Checking if this rule is already applied by the one above for specific types */
+    /* If an input is type text, it's already styled. This is more for untyped or other text-like inputs */
+    @apply bg-primary-800 border-primary-700 text-primary-50 placeholder-primary-300;
+  }
+
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;

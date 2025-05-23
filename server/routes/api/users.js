@@ -7,6 +7,19 @@ const { authenticate, isAdmin } = require('../../middleware/auth');
 router.use(authenticate);
 
 /**
+ * @route   GET /api/users
+ * @desc    Get all users
+ * @access  Private/Admin
+ */
+router.get('/', isAdmin, async (req, res, next) => {
+  try {
+    await userController.getAllUsers(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * @route   GET /api/users/:id
  * @desc    Get a user by ID
  * @access  Private
@@ -15,7 +28,7 @@ router.get('/:id', async (req, res, next) => {
   try {
     // Check if the user is requesting their own profile or is an admin
     if (req.user.id === req.params.id || req.user.role === 'admin') {
-      await userController.getUserById(req, res, next);
+      await userController.getUser(req, res, next);
     } else {
       return res.status(403).json({ error: 'Unauthorized: You can only access your own profile' });
     }

@@ -198,6 +198,53 @@ const updateUserStatus = async (req, res, next) => {
 // Initialize admin account when server starts
 initializeAdmin();
 
+exports.updateProfile = async (req, res, next) => {
+  const { name, email, username, phoneNumber } = req.body;
+  const userId = req.user.id; // From 'authenticate' middleware
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return next(createError(404, 'User not found'));
+    }
+
+    // Check for email uniqueness if changed
+    if (email && email.toLowerCase() !== user.email) {
+      const existingUserByEmail = await User.findOne({ email: email.toLowerCase() });
+      if (existingUserByEmail) {
+        return next(createError(400, 'Email already in use'));
+      }
+      user.email = email.toLowerCase();
+    }
+
+    // Check for username uniqueness if changed
+    if (username && username.toLowerCase() !== user.username) {
+      const existingUserByUsername = await User.findOne({ username: username.toLowerCase() });
+      if (existingUserByUsername) {
+        return next(createError(400, 'Username already in use'));
+      }
+      user.username = username.toLowerCase();
+    }
+    
+    if (name) user.name = name;
+    if (phoneNumber) user.phoneNumber = phoneNumber;
+    // Password updates should be handled via a separate, dedicated endpoint.
+
+    const updatedUser = await user.save();
+    const userObject = updatedUser.toObject();
+    delete userObject.password; // Ensure password is not returned
+    
+    res.status(200).json({ success: true, user: userObject });
+  } catch (err) {
+    if (err.code === 11000) { // MongoDB duplicate key error
+        let field = Object.keys(err.keyValue)[0];
+        field = field.charAt(0).toUpperCase() + field.slice(1);
+        return next(createError(400, `${field} already in use.`));
+    }
+    next(err);
+  }
+};
+
 // Export all functions in one place
 module.exports = {
   initializeAdmin,
@@ -205,5 +252,6 @@ module.exports = {
   login,
   getProfile,
   getAllUsers,
-  updateUserStatus
+  updateUserStatus,
+  updateProfile // Added new function
 };

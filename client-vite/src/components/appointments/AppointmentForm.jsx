@@ -11,7 +11,7 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [patients, setPatients] = useState([]);
-  const [treatments, setTreatments] = useState([]);
+  const [treatments, setTreatments] = useState([]); // This will hold the list of available treatments
   const [lastVisit, setLastVisit] = useState('');
   const [showColorPicker, setShowColorPicker] = useState(false);
   
@@ -19,7 +19,7 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
   const [formData, setFormData] = useState({
     patientName: '',
     patientPhone: '',
-    treatments: [],
+    procedure: '', // Changed from treatments: [] to procedure: ''
     startTime: new Date(),
     endTime: new Date(new Date().getTime() + 30 * 60000), // Default 30 min appointment
     notes: '',
@@ -43,7 +43,7 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
         ...initialData,
         startTime: new Date(initialData.startTime),
         endTime: new Date(initialData.endTime),
-        treatments: initialData.treatments || [],
+        procedure: initialData.procedure || '', // Changed from treatments
       });
     }
     // eslint-disable-next-line
@@ -110,6 +110,32 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
           [paymentField]: value
         }
       }));
+    } else if (name === 'procedure') { // Handle procedure select change
+      setFormData(prev => ({
+        ...prev,
+        procedure: value // Store the selected treatment name (or ID if preferred and handled downstream)
+      }));
+      // If cost needs to be updated based on selected procedure:
+      const selectedTreatment = treatments.find(t => t.name === value); // Or t._id === value if using IDs
+      if (selectedTreatment) {
+        setFormData(prev => ({
+          ...prev,
+          payment: {
+            ...prev.payment,
+            total: selectedTreatment.cost,
+            amountRemaining: selectedTreatment.cost - (prev.payment.amountPaid || 0)
+          }
+        }));
+      } else {
+         setFormData(prev => ({ // Reset total if no treatment selected or found
+          ...prev,
+          payment: {
+            ...prev.payment,
+            total: 0,
+            amountRemaining: 0 - (prev.payment.amountPaid || 0)
+          }
+        }));
+      }
     } else {
       setFormData(prev => ({
         ...prev,
@@ -118,23 +144,8 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
     }
   };
 
-  const handleTreatmentsChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions, option => option.value);
-    setFormData(prev => ({
-      ...prev,
-      treatments: selected
-    }));
-    // Dynamically calculate total cost
-    const total = treatments.filter(t => selected.includes(t._id)).reduce((sum, t) => sum + (t.cost || 0), 0);
-    setFormData(prev => ({
-      ...prev,
-      payment: {
-        ...prev.payment,
-        total,
-        amountRemaining: total - (prev.payment.amountPaid || 0)
-      }
-    }));
-  };
+  // This function is no longer needed if we are selecting a single procedure by name directly
+  // const handleTreatmentsChange = (e) => { ... } 
 
   const handleAmountPaidChange = (e) => {
     const amountPaid = Number(e.target.value) || 0;
@@ -199,7 +210,10 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
       // Prepare data for submission
       const appointmentData = {
         ...formData,
-        treatments: formData.treatments,
+        // Ensure 'procedure' field is correctly populated based on selection
+        // If 'procedure' in formData already holds the treatment name, no change needed here for it.
+        // If it held an ID, you might need to find the name here before sending.
+        // treatments: formData.treatments, // This line is removed as 'treatments' array is replaced by 'procedure' string
         payment: formData.payment
       };
       
@@ -211,7 +225,7 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
         setFormData({
           patientName: '',
           patientPhone: '',
-          treatments: [],
+          procedure: '', // Reset procedure
           startTime: new Date(),
           endTime: new Date(new Date().getTime() + 30 * 60000),
           notes: '',
@@ -289,23 +303,25 @@ const AppointmentForm = ({ onSubmit, initialData, mode = 'create' }) => {
           <div className="row mb-3">
             <div className="col-md-6">
               <div className="form-group">
-                <label htmlFor="treatments">Treatments*</label>
+                <label htmlFor="procedure">Procedure/Treatment*</label>
                 <select
-                  multiple
                   className="form-select"
-                  id="treatments"
-                  name="treatments"
-                  value={formData.treatments}
-                  onChange={handleTreatmentsChange}
+                  id="procedure"
+                  name="procedure"
+                  value={formData.procedure}
+                  onChange={handleInputChange} // Using generic handleInputChange, ensure it handles 'procedure' correctly
                   required
-                  disabled={loading}
+                  disabled={loading || treatments.length === 0}
                 >
+                  <option value="">Select a treatment</option>
                   {treatments.map(treatment => (
-                    <option key={treatment._id} value={treatment._id}>
+                    // Using treatment.name as value to directly populate procedure string field
+                    <option key={treatment._id} value={treatment.name}> 
                       {treatment.name} (${treatment.cost})
                     </option>
                   ))}
                 </select>
+                {treatments.length === 0 && !loading && <small className="text-muted">No treatments available.</small>}
               </div>
             </div>
             
