@@ -1,7 +1,7 @@
 // client/src/layouts/MainLayout.js - completed version
 import React, { useState, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import AuthContext from '../context/AuthContext.jsx';
+import { AuthContext } from '../context/AuthContext.jsx'; // Changed to named import
 import { 
   FaCalendarAlt, 
   FaChartLine, 

@@ -15,7 +15,7 @@ const isStaff = (req, res, next) => {
 // @route   POST /api/patients
 // @desc    Register a new patient
 // @access  Private (Staff only)
-router.post('/', auth, isStaff, async (req, res) => {
+router.post('/', auth.authenticate, isStaff, async (req, res) => {
   try {
     const {
       userId,
@@ -61,7 +61,7 @@ router.post('/', auth, isStaff, async (req, res) => {
 // @route   GET /api/patients
 // @desc    Get all patients
 // @access  Private (Staff only)
-router.get('/', auth, isStaff, async (req, res) => {
+router.get('/', auth.authenticate, isStaff, async (req, res) => {
   try {
     const patients = await Patient.find().populate('user', ['name', 'email']);
     res.json(patients);
@@ -74,7 +74,7 @@ router.get('/', auth, isStaff, async (req, res) => {
 // @route   GET /api/patients/:id
 // @desc    Get patient by ID
 // @access  Private (Staff or own patient record)
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', auth.authenticate, async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id).populate('user', ['name', 'email']);
     
@@ -105,7 +105,7 @@ router.get('/:id', auth, async (req, res) => {
 // @route   PUT /api/patients/:id
 // @desc    Update patient information
 // @access  Private (Staff only)
-router.put('/:id', auth, isStaff, async (req, res) => {
+router.put('/:id', auth.authenticate, isStaff, async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
     
@@ -139,7 +139,7 @@ router.put('/:id', auth, isStaff, async (req, res) => {
 // @route   DELETE /api/patients/:id
 // @desc    Delete a patient
 // @access  Private (Admin only)
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', auth.authenticate, async (req, res) => { // auth.isAdmin could be added here if needed, after auth.authenticate
   if (req.user.role !== 'admin') {
     return res.status(403).json({ error: 'Access denied. Admin only.' });
   }

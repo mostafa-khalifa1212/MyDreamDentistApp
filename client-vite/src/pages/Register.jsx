@@ -1,7 +1,7 @@
 // client/src/pages/Register.js
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthContext from '../context/AuthContext.jsx';
+import { AuthContext } from '../context/AuthContext.jsx'; // Changed to named import
 
 const Register = () => {
   const [formData, setFormData] = useState({
