@@ -253,5 +253,5 @@ module.exports = {
   getProfile,
   getAllUsers,
   updateUserStatus,
-  updateProfile // Added new function
+  updateProfile: exports.updateProfile // Explicitly assign from exports
 };

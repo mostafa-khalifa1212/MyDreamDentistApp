@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
-const AuthContext = createContext();
+export const AuthContext = createContext(null); // Changed: Added export and initial value
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -94,4 +94,5 @@ export const useAuth = () => {
   return context;
 };
 
-export default AuthContext;
+// Removed default export: export default AuthContext; 
+// AuthContext is now a named export.
